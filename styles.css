@@ -1189,9 +1189,12 @@ button { cursor: none; border: none; background: none; }
   transform: scale(1.05) rotate(2deg);
 }
 
-.ar-logo-svg {
+.ar-logo-img {
   width: 100%;
   height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 28px rgba(14, 116, 144, 0.45));
+  border-radius: 50%;
   display: block;
 }
 
