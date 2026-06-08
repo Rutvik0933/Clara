@@ -131,6 +131,25 @@ const defaultData = {
     email: "info@pureclarawater.com",
     text: "Join our growing network of dealerships. A simple way to boost your health business. For dealership inquiry, contact us today."
   },
+  campaign: {
+    badge: "Brand Initiative",
+    title: "Pure CLARA Purity Campaign",
+    subtitle: "Purity Campaign 2026",
+    description: "Celebrating sustainable hydration, pure water access, and community well-being.",
+    videoTitle: "Pure CLARA - Feel The Purity (Purity Campaign 2026)",
+    slides: [
+      { time: 0, text: "Sourcing Purity From Mountain Rivers...", subtext: "Sourced directly from pristine, untouched mountain rivers." },
+      { time: 6, text: "7-Stage Advanced Purification...", subtext: "Multi-barrier filtration retains essential natural minerals." },
+      { time: 12, text: "Government Approved Quality...", subtext: "Certified by the Bureau of Indian Standards (BIS)." },
+      { time: 18, text: "Pure CLARA: Your Hydration Partner", subtext: "Experience purity, health, and refreshment in every drop." }
+    ]
+  },
+  arBeverages: {
+    badge: "Parent Venture",
+    title: "AR BEVERAGES",
+    slogan: "Believe In Purity",
+    description: "AR Beverages is our parent venture, founded on the principle of delivering the highest quality beverages. As the driving force behind Pure CLARA, AR Beverages oversees all sourcing, filtration operations, and quality standards to guarantee health and wellness in every sip."
+  },
   footer: {
     description: "Your Ultimate Hydration Partner. Pure water from pristine river sources, delivered with care.",
     copyright: "© 2024 Pure CLARA. All Rights Reserved. | Non-Carbonated Packaged Drinking Water"

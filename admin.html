@@ -93,6 +93,9 @@
           <a href="#" class="sidebar-link" data-tab="footer">
             <span class="slink-icon">📋</span> Footer
           </a>
+          <a href="#" class="sidebar-link" data-tab="ar-beverages">
+            <span class="slink-icon">🥤</span> AR Beverages
+          </a>
           <a href="#" class="sidebar-link" data-tab="settings">
             <span class="slink-icon">⚙️</span> Settings
           </a>
@@ -322,6 +325,34 @@
             <button class="btn-primary" onclick="saveFooter()">💾 Save Footer</button>
           </div>
         </div>
+
+        <!-- AR BEVERAGES TAB -->
+        <div class="tab-content" id="tab-ar-beverages">
+          <div class="tab-header">
+            <h1>AR Beverages</h1>
+            <p>Edit parent venture description, title, badge, and slogan</p>
+          </div>
+          <div class="form-card">
+            <div class="form-group">
+              <label>Section Badge Label</label>
+              <input type="text" id="ar-badge-input" class="form-input" placeholder="Parent Venture" />
+            </div>
+            <div class="form-group">
+              <label>Venture Title</label>
+              <input type="text" id="ar-title-input" class="form-input" placeholder="AR BEVERAGES" />
+            </div>
+            <div class="form-group">
+              <label>Slogan (Believe In Purity)</label>
+              <input type="text" id="ar-slogan-input" class="form-input" placeholder="Believe In Purity" />
+            </div>
+            <div class="form-group">
+              <label>Venture Description</label>
+              <textarea id="ar-desc-input" class="form-input form-textarea" rows="5" placeholder="Description of the parent venture..."></textarea>
+            </div>
+            <button class="btn-primary" onclick="saveArBeverages()">💾 Save AR Beverages</button>
+          </div>
+        </div>
+
 
         <!-- SETTINGS TAB -->
         <div class="tab-content" id="tab-settings">

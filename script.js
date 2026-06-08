@@ -315,6 +315,8 @@
     data = getClaraData();
     populateHero();
     populateAbout();
+    populateCampaign();
+    populateArBeverages();
     populateProducts();
     populateBenefits();
     populateGallery();
@@ -483,6 +485,46 @@
     }
   }
 
+  function populateCampaign() {
+    const c = data.campaign;
+    if (!c) return;
+    setText('campaign-badge', c.badge || 'Brand Initiative');
+    setText('campaign-desc', c.description);
+    setText('poster-title-text', c.videoTitle || 'Pure CLARA - Feel The Purity');
+    
+    const titleEl = document.getElementById('campaign-title');
+    if (titleEl && c.title) {
+      const words = c.title.split(' ');
+      if (words.length > 2) {
+        const mainPart = words.slice(0, -2).join(' ');
+        const scriptPart = words.slice(-2).join(' ');
+        titleEl.innerHTML = `${mainPart} <span class="script-font">${scriptPart}</span>`;
+      } else {
+        titleEl.textContent = c.title;
+      }
+    }
+  }
+
+  function populateArBeverages() {
+    const a = data.arBeverages;
+    if (!a) return;
+    setText('ar-badge', a.badge || 'Parent Venture');
+    setText('ar-slogan-text', a.slogan || 'Believe In Purity');
+    setText('ar-desc-text', a.description);
+    
+    const titleEl = document.getElementById('ar-title');
+    if (titleEl && a.title) {
+      const words = a.title.split(' ');
+      if (words.length > 1) {
+        const mainPart = words.slice(0, -1).join(' ');
+        const scriptPart = words.slice(-1).join(' ');
+        titleEl.innerHTML = `${mainPart} <span class="script-font">${scriptPart}</span>`;
+      } else {
+        titleEl.textContent = a.title;
+      }
+    }
+  }
+
   function setText(id, text) {
     const el = document.getElementById(id);
     if (el) el.textContent = text;
@@ -630,8 +672,633 @@
     });
   }
 
+  // ── CAMPAIGN VIDEO PLAYER ─────────────────────────────────────────
+  function initCampaignVideoPlayer() {
+    const canvas = document.getElementById('campaign-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    const playerContainer = document.getElementById('campaign-player');
+    const poster = document.getElementById('player-poster');
+    const centerPlayBtn = document.getElementById('center-play-btn');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const muteBtn = document.getElementById('mute-btn');
+    const seekBar = document.getElementById('seek-bar');
+    const seekProgress = document.getElementById('seek-progress');
+    const volumeSlider = document.getElementById('volume-slider');
+    const timeDisplay = document.getElementById('time-display');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    
+    const playIcon = playPauseBtn.querySelector('.play-icon');
+    const pauseIcon = playPauseBtn.querySelector('.pause-icon');
+    const volumeUpIcon = muteBtn.querySelector('.volume-up-icon');
+    const volumeMuteIcon = muteBtn.querySelector('.volume-mute-icon');
+
+    // State variables
+    let isPlaying = false;
+    let isMuted = false;
+    let currentVolume = 0.8;
+    let currentTime = 0;
+    const duration = 24; // 24 seconds total
+    let lastTime = 0;
+    let animFrameId = null;
+    
+    // Particle arrays
+    let waterParticles = [];
+    let splashParticles = [];
+    let ripples = [];
+
+    // Faucet path drawing details
+    const faucetSpoutX = 350;
+    const faucetSpoutY = 125;
+
+    // Web Audio State
+    let audioCtx = null;
+    let droneOsc1 = null;
+    let droneOsc2 = null;
+    let droneGain = null;
+    let bubbleInterval = null;
+
+    function startAudio() {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        
+        if (!audioCtx) {
+          audioCtx = new AudioContextClass();
+          
+          droneGain = audioCtx.createGain();
+          droneGain.gain.setValueAtTime(0, audioCtx.currentTime);
+          
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(350, audioCtx.currentTime);
+          
+          droneOsc1 = audioCtx.createOscillator();
+          droneOsc1.type = 'triangle';
+          droneOsc1.frequency.setValueAtTime(110, audioCtx.currentTime); // A2 (110Hz)
+          
+          droneOsc2 = audioCtx.createOscillator();
+          droneOsc2.type = 'sine';
+          droneOsc2.frequency.setValueAtTime(165, audioCtx.currentTime); // E3 (165Hz)
+          
+          droneOsc1.connect(droneGain);
+          droneOsc2.connect(droneGain);
+          droneGain.connect(filter);
+          filter.connect(audioCtx.destination);
+          
+          droneOsc1.start();
+          droneOsc2.start();
+          
+          // Bubbling droplet sound interval
+          bubbleInterval = setInterval(() => {
+            if (isPlaying && !isMuted) {
+              playBubbleSound();
+            }
+          }, 140);
+        }
+        
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        
+        updateAudioVolume();
+      } catch (err) {
+        console.warn("Web Audio failed to start:", err);
+      }
+    }
+
+    function stopAudio() {
+      if (droneGain && audioCtx) {
+        droneGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.4);
+      }
+    }
+
+    function updateAudioVolume() {
+      if (!audioCtx || !droneGain) return;
+      const targetGain = (isPlaying && !isMuted) ? currentVolume * 0.12 : 0;
+      droneGain.gain.linearRampToValueAtTime(targetGain, audioCtx.currentTime + 0.2);
+    }
+
+    function playBubbleSound() {
+      if (!audioCtx || audioCtx.state === 'suspended') return;
+      
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.type = 'sine';
+      // High frequency pure drop sound
+      const baseFreq = 750 + Math.random() * 800;
+      osc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.5, audioCtx.currentTime + 0.1);
+      
+      gain.gain.setValueAtTime(currentVolume * 0.03 * (0.4 + Math.random() * 0.6), audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    }
+
+    // Canvas drawing helper function: draws one single frame of animation
+    function drawFrame(t) {
+      // 1. Clear with gradient
+      const bgGrad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      bgGrad.addColorStop(0, '#040712');
+      bgGrad.addColorStop(0.5, '#080d22');
+      bgGrad.addColorStop(1, '#0c1b3e');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw grid overlay
+      ctx.strokeStyle = 'rgba(34, 211, 238, 0.02)';
+      ctx.lineWidth = 1;
+      const gridSize = 60;
+      for (let x = 0; x < canvas.width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      // 2. Draw animated Spotlights
+      drawSpotlight(150, 0, 180, 'rgba(14, 116, 144, 0.2)', Math.sin(t * 0.8) * 0.12);
+      drawSpotlight(640, 0, 260, 'rgba(34, 211, 238, 0.15)', Math.cos(t * 0.5) * 0.15);
+      drawSpotlight(1100, 0, 200, 'rgba(168, 85, 247, 0.18)', Math.sin(t * 0.6) * 0.1);
+
+      // 3. Draw Water ripples at the bottom
+      drawRipples();
+
+      // 4. Draw Water particles & splash particles
+      drawParticles();
+
+      // 5. Draw Faucet silhouette
+      drawFaucet();
+
+      // 6. Draw Text slide
+      drawTextSlide(t);
+    }
+
+    function drawSpotlight(x, y, radius, color, rotationOffset) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rotationOffset);
+      
+      const grad = ctx.createRadialGradient(0, 0, 10, 0, 400, radius);
+      grad.addColorStop(0, color);
+      grad.addColorStop(1, 'transparent');
+      
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-radius, 720);
+      ctx.lineTo(radius, 720);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.restore();
+    }
+
+    function drawFaucet() {
+      ctx.save();
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = 'rgba(34, 211, 238, 0.4)';
+      ctx.fillStyle = '#ffffff';
+      
+      // Vertical pipe going down from ceiling
+      ctx.fillRect(180, 0, 30, 60);
+      
+      // Elbow joint
+      ctx.beginPath();
+      ctx.arc(195, 60, 15, 0, Math.PI);
+      ctx.fill();
+      
+      // Horizontal pipe extending right
+      ctx.fillRect(195, 45, 150, 30);
+      
+      // Valve housing (thick middle cylinder)
+      ctx.fillRect(260, 35, 25, 50);
+      
+      // T-handle on top
+      ctx.fillRect(270, 15, 5, 20); // neck
+      ctx.fillRect(250, 10, 45, 8); // bar
+      ctx.beginPath();
+      ctx.arc(250, 14, 4, 0, Math.PI * 2);
+      ctx.arc(295, 14, 4, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Spout nozzle bend downwards
+      ctx.beginPath();
+      ctx.moveTo(330, 45);
+      ctx.lineTo(360, 45);
+      ctx.arcTo(360, 90, 340, 90, 15);
+      ctx.lineTo(340, 90);
+      ctx.arcTo(335, 90, 335, 75, 15);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Nozzle flange
+      ctx.fillRect(330, 75, 30, 10);
+      
+      ctx.restore();
+    }
+
+    function drawParticles() {
+      ctx.save();
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = 'rgba(34, 211, 238, 0.5)';
+      
+      // Draw falling water stream drops
+      waterParticles.forEach(p => {
+        ctx.fillStyle = `rgba(226, 242, 254, ${p.opacity})`;
+        ctx.beginPath();
+        ctx.ellipse(p.x, p.y, p.radius * 0.7, p.radius * 1.5, p.angle || 0, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Draw splash particles
+      ctx.shadowColor = 'rgba(255, 255, 255, 0.7)';
+      splashParticles.forEach(p => {
+        ctx.fillStyle = `rgba(34, 211, 238, ${p.opacity})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
+      ctx.restore();
+    }
+
+    function drawRipples() {
+      ctx.save();
+      ctx.lineWidth = 1.5;
+      ripples.forEach(r => {
+        ctx.strokeStyle = `rgba(34, 211, 238, ${r.opacity})`;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = 'rgba(34, 211, 238, 0.3)';
+        ctx.beginPath();
+        ctx.ellipse(r.x, r.y, r.rx, r.ry, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    function drawTextSlide(t) {
+      const campaignData = data.campaign;
+      if (!campaignData || !campaignData.slides) return;
+      
+      // Find current active slide
+      let currentSlide = null;
+      for (let i = campaignData.slides.length - 1; i >= 0; i--) {
+        if (t >= campaignData.slides[i].time) {
+          currentSlide = campaignData.slides[i];
+          break;
+        }
+      }
+      
+      if (!currentSlide) return;
+
+      const slideIndex = campaignData.slides.indexOf(currentSlide);
+      const nextSlide = campaignData.slides[slideIndex + 1];
+      const endTime = nextSlide ? nextSlide.time : duration;
+      
+      let opacity = 1.0;
+      const transitionTime = 0.8;
+      const timeInSlide = t - currentSlide.time;
+      const timeLeftInSlide = endTime - t;
+      
+      if (timeInSlide < transitionTime) {
+        opacity = timeInSlide / transitionTime;
+      } else if (timeLeftInSlide < transitionTime) {
+        opacity = timeLeftInSlide / transitionTime;
+      }
+      
+      if (opacity <= 0) return;
+      
+      ctx.save();
+      ctx.globalAlpha = opacity;
+      
+      const textX = 520;
+      const textY = 280;
+      
+      // 1. Draw Section Tag (cyan uppercase)
+      ctx.fillStyle = '#22d3ee';
+      ctx.font = '600 13px "Inter", sans-serif';
+      ctx.letterSpacing = '3px';
+      ctx.fillText((campaignData.subtitle || "").toUpperCase(), textX, textY - 40);
+      
+      // 2. Draw Title Text (white elegant Playfair serif)
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 36px "Playfair Display", serif';
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      
+      wrapText(ctx, currentSlide.text, textX, textY, 650, 46);
+      
+      // 3. Draw Subtitle / Description Text (silver Inter sans-serif)
+      ctx.fillStyle = '#8ba8c0';
+      ctx.font = '400 16px "Inter", sans-serif';
+      ctx.shadowBlur = 0;
+      
+      const titleRowsCount = getWrappedRowsCount(ctx, currentSlide.text, 650);
+      const subtextY = textY + (titleRowsCount * 46) + 12;
+      wrapText(ctx, currentSlide.subtext, textX, subtextY, 600, 26);
+      
+      ctx.restore();
+    }
+
+    function wrapText(context, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      let currentY = y;
+      
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = context.measureText(testLine);
+        const testWidth = metrics.width;
+        if (testWidth > maxWidth && n > 0) {
+          context.fillText(line, x, currentY);
+          line = words[n] + ' ';
+          currentY += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      context.fillText(line, x, currentY);
+    }
+    
+    function getWrappedRowsCount(context, text, maxWidth) {
+      const words = text.split(' ');
+      let line = '';
+      let count = 1;
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = context.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          line = words[n] + ' ';
+          count++;
+        } else {
+          line = testLine;
+        }
+      }
+      return count;
+    }
+
+    // Physics Update Logic
+    function updatePhysics(dt) {
+      // 1. Generate new falling water droplets
+      if (currentTime > 0.8 && currentTime < 23.5) {
+        const spawnCount = 2;
+        for (let i = 0; i < spawnCount; i++) {
+          waterParticles.push({
+            x: faucetSpoutX - 4 + Math.random() * 8,
+            y: faucetSpoutY,
+            vx: -0.3 + Math.random() * 0.6,
+            vy: 1 + Math.random() * 2,
+            radius: 2.0 + Math.random() * 1.5,
+            opacity: 0.6 + Math.random() * 0.4
+          });
+        }
+      }
+
+      // 2. Update falling water droplets
+      const gravity = 0.22;
+      const targetY = canvas.height * 0.82; // ripple splash line
+      
+      waterParticles = waterParticles.filter(p => {
+        p.vy += gravity;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.angle = Math.atan2(p.vy, p.vx) - Math.PI / 2;
+        
+        if (p.y >= targetY) {
+          const splashCount = 1 + Math.floor(Math.random() * 2);
+          for (let j = 0; j < splashCount; j++) {
+            splashParticles.push({
+              x: p.x,
+              y: targetY - 2,
+              vx: -1.5 + Math.random() * 3,
+              vy: -2.0 - Math.random() * 2.5,
+              radius: p.radius * 0.4 + 0.4,
+              opacity: 0.8 + Math.random() * 0.2,
+              life: 1.0,
+              decay: 0.05 + Math.random() * 0.05
+            });
+          }
+          
+          if (Math.random() < 0.20) {
+            ripples.push({
+              x: p.x,
+              y: targetY,
+              rx: 2,
+              ry: 0.5,
+              opacity: 0.7,
+              expansion: 1.2 + Math.random() * 1.5
+            });
+          }
+          return false;
+        }
+        return p.y < canvas.height;
+      });
+
+      // 3. Update splash particles
+      splashParticles = splashParticles.filter(p => {
+        p.vy += gravity * 0.8;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.opacity -= p.decay;
+        return p.opacity > 0 && p.y < canvas.height;
+      });
+
+      // 4. Update ripples expansion
+      ripples = ripples.filter(r => {
+        r.rx += r.expansion;
+        r.ry = r.rx * 0.25;
+        r.opacity -= 0.02;
+        return r.opacity > 0;
+      });
+    }
+
+    // Main Loop
+    function animLoop(timestamp) {
+      if (!isPlaying) return;
+
+      if (!lastTime) lastTime = timestamp;
+      const dt = (timestamp - lastTime) / 1000;
+      lastTime = timestamp;
+      
+      const cappedDt = Math.min(dt, 0.1);
+      currentTime += cappedDt;
+      
+      if (currentTime >= duration) {
+        handleVideoEnded();
+        return;
+      }
+
+      seekBar.value = currentTime;
+      updateProgressBar();
+      updateTimeDisplay();
+
+      updatePhysics(cappedDt);
+      drawFrame(currentTime);
+
+      animFrameId = requestAnimationFrame(animLoop);
+    }
+
+    function updateProgressBar() {
+      const pct = (currentTime / duration) * 100;
+      seekProgress.style.width = pct + '%';
+    }
+
+    function updateTimeDisplay() {
+      const formatTime = (seconds) => {
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+      };
+      timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+    }
+
+    function playVideo() {
+      isPlaying = true;
+      poster.classList.add('hidden');
+      playIcon.classList.add('hidden');
+      pauseIcon.classList.remove('hidden');
+      playPauseBtn.setAttribute('aria-label', 'Pause');
+      
+      startAudio();
+      
+      lastTime = 0;
+      animFrameId = requestAnimationFrame(animLoop);
+    }
+
+    function pauseVideo() {
+      isPlaying = false;
+      playIcon.classList.remove('hidden');
+      pauseIcon.classList.add('hidden');
+      playPauseBtn.setAttribute('aria-label', 'Play');
+      
+      stopAudio();
+      
+      if (animFrameId) {
+        cancelAnimationFrame(animFrameId);
+        animFrameId = null;
+      }
+      drawFrame(currentTime);
+    }
+
+    function togglePlay() {
+      if (isPlaying) {
+        pauseVideo();
+      } else {
+        playVideo();
+      }
+    }
+
+    function handleVideoEnded() {
+      isPlaying = false;
+      currentTime = 0;
+      seekBar.value = 0;
+      updateProgressBar();
+      updateTimeDisplay();
+      
+      waterParticles = [];
+      splashParticles = [];
+      ripples = [];
+      
+      poster.classList.remove('hidden');
+      playIcon.classList.remove('hidden');
+      pauseIcon.classList.add('hidden');
+      playPauseBtn.setAttribute('aria-label', 'Play');
+      
+      stopAudio();
+      
+      if (animFrameId) {
+        cancelAnimationFrame(animFrameId);
+        animFrameId = null;
+      }
+      drawFrame(0);
+    }
+
+    // Event Bindings
+    centerPlayBtn.addEventListener('click', playVideo);
+    playPauseBtn.addEventListener('click', togglePlay);
+    canvas.addEventListener('click', togglePlay);
+
+    seekBar.addEventListener('input', (e) => {
+      currentTime = parseFloat(e.target.value);
+      updateProgressBar();
+      updateTimeDisplay();
+      waterParticles = [];
+      splashParticles = [];
+      drawFrame(currentTime);
+    });
+
+    muteBtn.addEventListener('click', () => {
+      isMuted = !isMuted;
+      if (isMuted) {
+        volumeUpIcon.classList.add('hidden');
+        volumeMuteIcon.classList.remove('hidden');
+        muteBtn.setAttribute('aria-label', 'Unmute');
+        volumeSlider.value = 0;
+      } else {
+        volumeUpIcon.classList.remove('hidden');
+        volumeMuteIcon.classList.add('hidden');
+        muteBtn.setAttribute('aria-label', 'Mute');
+        volumeSlider.value = currentVolume;
+      }
+      updateAudioVolume();
+    });
+
+    volumeSlider.addEventListener('input', (e) => {
+      currentVolume = parseFloat(e.target.value);
+      if (currentVolume === 0) {
+        isMuted = true;
+        volumeUpIcon.classList.add('hidden');
+        volumeMuteIcon.classList.remove('hidden');
+        muteBtn.setAttribute('aria-label', 'Unmute');
+      } else {
+        isMuted = false;
+        volumeUpIcon.classList.remove('hidden');
+        volumeMuteIcon.classList.add('hidden');
+        muteBtn.setAttribute('aria-label', 'Mute');
+      }
+      updateAudioVolume();
+    });
+
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        playerContainer.requestFullscreen().catch(err => {
+          console.warn("Fullscreen request failed:", err);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    // Custom cursor hover states for player elements
+    const cursor = document.getElementById('water-cursor');
+    if (window.innerWidth > 768 && cursor) {
+      playerContainer.querySelectorAll('button, input[type="range"]').forEach(el => {
+        el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+        el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+      });
+    }
+
+    // Initial render
+    drawFrame(0);
+  }
+
   // ── INIT ──────────────────────────────────────────────────────────
   populateAll();
+  initCampaignVideoPlayer();
 
   // Listen for data updates from admin panel
   window.addEventListener('storage', (e) => {

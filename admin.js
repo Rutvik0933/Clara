@@ -116,6 +116,16 @@ function _initTabs() {
       document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('active'); });
       var tabEl = _el('tab-' + tab);
       if(tabEl) tabEl.classList.add('active');
+      
+      // Re-fetch inquiries from localStorage on navigation to sync fresh data (especially under file:// protocol)
+      _inquiries = JSON.parse(localStorage.getItem('claraInquiries') || '[]');
+      _updateInquiryBadge();
+      
+      if (tab === 'inquiries') {
+        renderInquiries();
+      } else if (tab === 'dashboard') {
+        _updateDashboard();
+      }
     });
   });
 
@@ -148,6 +158,7 @@ function _loadAllTabs() {
   _loadContactTab();
   _loadDealerTab();
   _loadFooterTab();
+  _loadArBeveragesTab();
   _loadInquiriesTab();
   _updateInquiryBadge();
 }
@@ -444,6 +455,26 @@ function saveFooter() {
   var d = _getData();
   d.footer.description = _val('f-desc'); d.footer.copyright = _val('f-copyright');
   _saveAndNotify('Footer saved!');
+}
+
+// ── AR BEVERAGES TAB ────────────────────────────────────────────────
+function _loadArBeveragesTab() {
+  var d = _getData();
+  var ar = d.arBeverages || { badge: "Parent Venture", title: "AR BEVERAGES", slogan: "Believe In Purity", description: "" };
+  _setVal('ar-badge-input', ar.badge);
+  _setVal('ar-title-input', ar.title);
+  _setVal('ar-slogan-input', ar.slogan);
+  _setVal('ar-desc-input', ar.description);
+}
+function saveArBeverages() {
+  var d = _getData();
+  d.arBeverages = {
+    badge: _val('ar-badge-input'),
+    title: _val('ar-title-input'),
+    slogan: _val('ar-slogan-input'),
+    description: _val('ar-desc-input')
+  };
+  _saveAndNotify('AR Beverages section saved!');
 }
 
 // ── SETTINGS ───────────────────────────────────────────────────────

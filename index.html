@@ -38,8 +38,10 @@
       <ul class="nav-links" id="nav-links">
         <li><a href="#home" class="nav-link active">Home</a></li>
         <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#campaign" class="nav-link">Campaign</a></li>
         <li><a href="#products" class="nav-link">Products</a></li>
         <li><a href="#why-clara" class="nav-link">Why Clara</a></li>
+        <li><a href="#ar-beverages" class="nav-link">Venture</a></li>
         <li><a href="#gallery" class="nav-link">Gallery</a></li>
         <li><a href="#contact" class="nav-link">Contact</a></li>
       </ul>
@@ -52,11 +54,12 @@
     <div class="mobile-menu" id="mobile-menu">
       <a href="#home" class="mobile-link">Home</a>
       <a href="#about" class="mobile-link">About</a>
+      <a href="#campaign" class="mobile-link">Campaign</a>
       <a href="#products" class="mobile-link">Products</a>
       <a href="#why-clara" class="mobile-link">Why Clara</a>
+      <a href="#ar-beverages" class="mobile-link">Venture</a>
       <a href="#gallery" class="mobile-link">Gallery</a>
       <a href="#contact" class="mobile-link">Contact</a>
-
     </div>
   </nav>
 
@@ -140,6 +143,71 @@
     </div>
   </section>
 
+  <!-- ===== CAMPAIGN SECTION ===== -->
+  <section id="campaign" class="campaign">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <p class="section-tag" id="campaign-badge">Brand Initiative</p>
+        <h2 class="section-title" id="campaign-title">Pure CLARA <span class="script-font">Purity Campaign</span></h2>
+        <p class="section-sub" id="campaign-desc">Celebrating sustainable hydration, pure water access, and community well-being.</p>
+      </div>
+
+      <div class="player-wrapper reveal-scale">
+        <div class="custom-video-player" id="campaign-player">
+          
+          <!-- Canvas for real-time graphics animation -->
+          <canvas id="campaign-canvas" width="1280" height="720"></canvas>
+
+          <!-- Poster image cover -->
+          <div class="player-poster" id="player-poster" style="background-image: url('images/clara_video_poster.png');">
+            <button class="center-play-btn" id="center-play-btn" aria-label="Play Campaign Video">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <div class="poster-title" id="poster-title-text">Pure CLARA - Feel The Purity</div>
+          </div>
+
+          <!-- Video Controls Overlay -->
+          <div class="player-controls" id="player-controls">
+            <!-- Progress Bar / Seek Slider -->
+            <div class="control-row seek-row">
+              <input type="range" class="seek-bar" id="seek-bar" min="0" max="24" step="0.05" value="0" aria-label="Seek time" />
+              <div class="seek-progress" id="seek-progress"></div>
+            </div>
+            
+            <div class="control-row button-row">
+              <div class="controls-left">
+                <!-- Play / Pause -->
+                <button class="control-btn" id="play-pause-btn" aria-label="Play">
+                  <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                  <svg class="pause-icon hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+
+                <!-- Time Counter -->
+                <span class="time-display" id="time-display">0:00 / 0:24</span>
+              </div>
+
+              <div class="controls-right">
+                <!-- Volume / Mute -->
+                <div class="volume-container">
+                  <button class="control-btn" id="mute-btn" aria-label="Mute">
+                    <svg class="volume-up-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                    <svg class="volume-mute-icon hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.21.05-.42.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                  </button>
+                  <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.05" value="0.8" aria-label="Volume slider" />
+                </div>
+
+                <!-- Fullscreen -->
+                <button class="control-btn" id="fullscreen-btn" aria-label="Toggle Fullscreen">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== PRODUCTS SECTION ===== -->
   <section id="products" class="products">
     <div class="container">
@@ -166,6 +234,53 @@
       </div>
     </div>
     <div class="why-bg-text">PURITY</div>
+  </section>
+  <!-- ===== AR BEVERAGES SECTION ===== -->
+  <section id="ar-beverages" class="ar-beverages">
+    <div class="container">
+      <div class="ar-grid">
+        <div class="ar-logo-wrap reveal-left">
+          <div class="ar-logo-box">
+            <svg class="ar-logo-svg" viewBox="0 0 300 300" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <filter id="ar-glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="8" stdDeviation="15" flood-color="#003cf5" flood-opacity="0.4" />
+                </filter>
+              </defs>
+              <!-- Glowing circle -->
+              <circle cx="150" cy="150" r="135" fill="#ffffff" stroke="#e0e7ff" stroke-width="2" filter="url(#ar-glow)" />
+              
+              <!-- Monogram "AR" -->
+              <g stroke="#003cf5" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <!-- Left diagonal bar of A (bottom-left piece) -->
+                <path d="M 85,175 L 110,140" stroke-width="15" />
+                <!-- Main stem and R loop -->
+                <path d="M 120,175 L 160,90 H 195 C 215,90 215,130 195,130 H 150 L 175,175" stroke-width="15" />
+                <!-- Crossbar of A -->
+                <path d="M 135,140 H 175" stroke-width="11" />
+              </g>
+
+              <!-- "BEVERAGES" Text -->
+              <text x="150" y="232" font-family="'Inter', sans-serif" font-weight="900" font-size="23" fill="#003cf5" text-anchor="middle" letter-spacing="4px">BEVERAGES</text>
+
+              <!-- "Believe In Purity" Text -->
+              <text x="150" y="258" font-family="'Dancing Script', cursive" font-weight="700" font-size="18" fill="#526070" text-anchor="middle">Believe In Purity</text>
+            </svg>
+          </div>
+        </div>
+        
+        <div class="ar-content reveal-right">
+          <p class="section-tag" id="ar-badge">Parent Venture</p>
+          <h2 class="section-title" id="ar-title">AR <span class="script-font">BEVERAGES</span></h2>
+          <p class="ar-slogan" id="ar-slogan-text">Believe In Purity</p>
+          <p class="ar-desc" id="ar-desc-text">AR Beverages is our parent venture, founded on the principle of delivering the highest quality beverages. As the driving force behind Pure CLARA, AR Beverages oversees all sourcing, filtration operations, and quality standards to guarantee health and wellness in every sip.</p>
+          <div class="ar-features">
+            <div class="ar-feat-item">🛡️ <strong>Absolute Quality</strong><span>Standardized mineral and pH regulation</span></div>
+            <div class="ar-feat-item">🌿 <strong>Nature Sourced</strong><span>Focusing on natural purity and eco-friendly packaging</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ===== GALLERY / BANNER SECTION ===== -->
@@ -277,6 +392,7 @@
             <span class="logo-clara">CLARA</span>
             <span class="logo-tm">™</span>
           </div>
+          <p class="footer-venture-tag" style="font-size:0.75rem;color:var(--text-secondary);margin:-0.5rem 0 1rem;letter-spacing:0.05em;">a venture by <a href="#ar-beverages" class="venture-link" style="color:var(--blue-light);font-weight:600;text-decoration:underline;">AR BEVERAGES</a></p>
           <p id="footer-desc">Your Ultimate Hydration Partner. Pure water from pristine river sources, delivered with care.</p>
           <p class="footer-social-label">Follow Us</p>
           <div class="footer-social">
