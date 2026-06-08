@@ -44,6 +44,7 @@
         <li><a href="#ar-beverages" class="nav-link">Venture</a></li>
         <li><a href="#gallery" class="nav-link">Gallery</a></li>
         <li><a href="#contact" class="nav-link">Contact</a></li>
+        <li><a href="#map" class="nav-link">Location</a></li>
       </ul>
       <div class="nav-actions">
         <button class="hamburger" id="hamburger" aria-label="Toggle menu">
@@ -60,6 +61,7 @@
       <a href="#ar-beverages" class="mobile-link">Venture</a>
       <a href="#gallery" class="mobile-link">Gallery</a>
       <a href="#contact" class="mobile-link">Contact</a>
+      <a href="#map" class="mobile-link">Location</a>
     </div>
   </nav>
 
@@ -353,6 +355,59 @@
             <button type="submit" class="btn-primary full-width" id="form-submit">Send Message</button>
             <div class="form-success" id="form-success">✅ Thank you! We'll contact you soon.</div>
           </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MAP SECTION ===== -->
+  <section id="map" class="map-section reveal-up">
+    <div class="container">
+      <div class="section-header reveal-up">
+        <p class="section-tag">Our Location</p>
+        <h2 class="section-title">Visit Our <span class="script-font">Factory</span></h2>
+        <p class="section-sub" id="map-section-sub">Locate our state-of-the-art purification plant in Gujarat, India.</p>
+      </div>
+      <div class="map-split-container reveal-scale">
+        <div class="map-info-pane">
+          <div class="map-pane-header">
+            <div class="map-pane-icon">📍</div>
+            <h3 id="map-pane-title">Pure CLARA Factory</h3>
+          </div>
+          <div class="map-details-list">
+            <div class="map-detail-item">
+              <span class="mdi-icon">🏢</span>
+              <div>
+                <strong>Address</strong>
+                <span id="map-pane-address">AR Beverages, Gujarat, India</span>
+              </div>
+            </div>
+            <div class="map-detail-item">
+              <span class="mdi-icon">📞</span>
+              <div>
+                <strong>Phone</strong>
+                <span id="map-pane-phone">+91 96625 50051</span>
+              </div>
+            </div>
+            <div class="map-detail-item">
+              <span class="mdi-icon">📧</span>
+              <div>
+                <strong>Email</strong>
+                <span id="map-pane-email">info@pureclarawater.com</span>
+              </div>
+            </div>
+            <div class="map-detail-item">
+              <span class="mdi-icon">🕒</span>
+              <div>
+                <strong>Operating Hours</strong>
+                <span id="map-pane-timings">Mon - Sat: 9:00 AM - 6:00 PM</span>
+              </div>
+            </div>
+          </div>
+          <a href="#" id="map-pane-directions-btn" target="_blank" class="btn-primary">Get Directions ↗</a>
+        </div>
+        <div class="map-view-pane">
+          <div id="map-container" class="map-container"></div>
         </div>
       </div>
     </div>

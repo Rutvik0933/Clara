@@ -96,6 +96,9 @@
           <a href="#" class="sidebar-link" data-tab="ar-beverages">
             <span class="slink-icon">🥤</span> AR Beverages
           </a>
+          <a href="#" class="sidebar-link" data-tab="map">
+            <span class="slink-icon">📍</span> Factory Map
+          </a>
           <a href="#" class="sidebar-link" data-tab="settings">
             <span class="slink-icon">⚙️</span> Settings
           </a>
@@ -353,6 +356,76 @@
           </div>
         </div>
 
+        <!-- FACTORY MAP TAB -->
+        <div class="tab-content" id="tab-map">
+          <div class="tab-header">
+            <h1>Factory Map Settings</h1>
+            <p>Configure your factory location, map settings, and Google Maps API key.</p>
+          </div>
+          <div class="form-card">
+            <h3>🔑 API Configuration</h3>
+            <div class="form-group">
+              <label>Google Maps API Key</label>
+              <input type="text" id="map-api-key" class="form-input" placeholder="AIzaSy..." />
+              <p class="form-help-text" style="color:var(--text-secondary);font-size:0.75rem;margin-top:0.5rem;line-height:1.4;">
+                If you don't have a Google Maps API Key, leave this field blank. The website will automatically use a beautiful, interactive open-source map (Leaflet/OpenStreetMap) as a fallback!
+              </p>
+            </div>
+          </div>
+          <div class="form-card">
+            <h3>📍 Factory Location Details</h3>
+            <div class="form-group" style="margin-bottom:1.5rem; position:relative;">
+              <label>🔍 Search Location (Google Places Autocomplete)</label>
+              <div style="display:flex; gap:10px;">
+                <input type="text" id="map-search-input" class="form-input" placeholder="Search for your factory or location..." style="flex:1;" />
+                <button type="button" id="btn-init-search" class="btn-primary btn-sm" onclick="initSearchAutocomplete()" style="white-space:nowrap; cursor:pointer;">Initialize Search</button>
+              </div>
+              <div id="map-search-results" style="display:none; position:absolute; left:0; right:0; top:100%; z-index:1001; background:var(--dark-3); border:var(--border); border-radius:var(--radius-sm); max-height:220px; overflow-y:auto; box-shadow:var(--shadow); margin-top:5px;"></div>
+              <p class="form-help-text" style="color:var(--text-secondary);font-size:0.75rem;margin-top:0.5rem;line-height:1.4;">
+                Type a location and select it from the dropdown. Latitude, Longitude, and Address fields will update automatically. (If no Google API Key is set, OpenStreetMap search fallback will be used).
+              </p>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Latitude</label>
+                <input type="number" id="map-lat" class="form-input" step="any" placeholder="23.073171" />
+              </div>
+              <div class="form-group">
+                <label>Longitude</label>
+                <input type="number" id="map-lng" class="form-input" step="any" placeholder="72.731736" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Map Zoom Level (1 to 20)</label>
+                <input type="number" id="map-zoom" class="form-input" min="1" max="20" placeholder="8" />
+              </div>
+              <div class="form-group">
+                <label>Factory Name (Marker Title)</label>
+                <input type="text" id="map-factory-name" class="form-input" placeholder="Huka Gam, Huka, Gujarat 382330" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Detailed Address (Shown in details card & directions)</label>
+              <input type="text" id="map-address" class="form-input" placeholder="AR Beverages, Gujarat, India" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Factory Phone Number</label>
+                <input type="tel" id="map-phone" class="form-input" placeholder="+91 96625 50051" />
+              </div>
+              <div class="form-group">
+                <label>Factory Email Address</label>
+                <input type="email" id="map-email" class="form-input" placeholder="info@pureclarawater.com" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Operating Hours / Timings</label>
+              <input type="text" id="map-timings" class="form-input" placeholder="Mon - Sat: 9:00 AM - 6:00 PM" />
+            </div>
+            <button class="btn-primary" onclick="saveMapSettings()">💾 Save Map Settings</button>
+          </div>
+        </div>
 
         <!-- SETTINGS TAB -->
         <div class="tab-content" id="tab-settings">

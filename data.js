@@ -153,6 +153,17 @@ const defaultData = {
   footer: {
     description: "Your Ultimate Hydration Partner. Pure water from pristine river sources, delivered with care.",
     copyright: "© 2024 Pure CLARA. All Rights Reserved. | Non-Carbonated Packaged Drinking Water"
+  },
+  map: {
+    apiKey: "",
+    latitude: 23.073171,
+    longitude: 72.731736,
+    zoom: 8,
+    factoryName: "Huka Gam, Huka, Gujarat 382330",
+    address: "Huka Gam, Huka, Gujarat 382330",
+    phone: "+91 96625 50051",
+    email: "info@pureclarawater.com",
+    timings: "Mon - Sat: 9:00 AM - 6:00 PM"
   }
 };
 
@@ -162,6 +173,15 @@ function getClaraData() {
     const stored = localStorage.getItem(CLARA_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
+      // Auto-migrate old default coordinates (22.3072, 70.8022) to new default coordinates (23.073171, 72.731736) and zoom
+      if (parsed.map && (parsed.map.latitude === 22.3072 || parsed.map.latitude === "22.3072")) {
+        parsed.map.latitude = defaultData.map.latitude;
+        parsed.map.longitude = defaultData.map.longitude;
+        parsed.map.zoom = defaultData.map.zoom;
+        parsed.map.factoryName = defaultData.map.factoryName;
+        parsed.map.address = defaultData.map.address;
+        localStorage.setItem(CLARA_KEY, JSON.stringify(parsed));
+      }
       // Deep merge to ensure new fields are present
       return deepMerge(defaultData, parsed);
     }

@@ -324,6 +324,7 @@
     populateContact();
     populateDealer();
     populateFooter();
+    populateMap();
     // Re-apply animations on dynamically generated content
     setTimeout(() => {
       splitIntoWords('.section-title');
@@ -1294,6 +1295,254 @@
 
     // Initial render
     drawFrame(0);
+  }
+
+  // ── DYNAMIC MAP INTEGRATION ─────────────────────────────────────────
+  const googleMapStyles = [
+    { elementType: "geometry", stylers: [{ color: "#0b0f19" }] },
+    { elementType: "labels.text.stroke", stylers: [{ color: "#0b0f19" }] },
+    { elementType: "labels.text.fill", stylers: [{ color: "#74828f" }] },
+    {
+      featureType: "administrative.locality",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#38bdf8" }],
+    },
+    {
+      featureType: "poi",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#74828f" }],
+    },
+    {
+      featureType: "poi.park",
+      elementType: "geometry",
+      stylers: [{ color: "#0d1b2a" }],
+    },
+    {
+      featureType: "poi.park",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#588157" }],
+    },
+    {
+      featureType: "road",
+      elementType: "geometry",
+      stylers: [{ color: "#1e293b" }],
+    },
+    {
+      featureType: "road",
+      elementType: "geometry.stroke",
+      stylers: [{ color: "#334155" }],
+    },
+    {
+      featureType: "road",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#64748b" }],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry",
+      stylers: [{ color: "#0f172a" }],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "geometry.stroke",
+      stylers: [{ color: "#1e293b" }],
+    },
+    {
+      featureType: "road.highway",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#f8fafc" }],
+    },
+    {
+      featureType: "water",
+      elementType: "geometry",
+      stylers: [{ color: "#071c35" }],
+    },
+    {
+      featureType: "water",
+      elementType: "labels.text.fill",
+      stylers: [{ color: "#0ea5e9" }],
+    },
+    {
+      featureType: "water",
+      elementType: "labels.text.stroke",
+      stylers: [{ color: "#071c35" }],
+    },
+  ];
+
+  const waterDropSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="38" height="38" fill="none">
+      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" fill="url(#drop-grad)" stroke="#22d3ee" stroke-width="1.5"/>
+      <circle cx="12" cy="14" r="3" fill="#ffffff" opacity="0.3"/>
+      <defs>
+        <linearGradient id="drop-grad" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#0ea5e9"/>
+          <stop offset="100%" stop-color="#0284c7"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  `;
+
+  function loadGoogleMaps(apiKey, callback) {
+    if (window.google && window.google.maps) {
+      callback();
+      return;
+    }
+    if (document.getElementById('google-maps-api-script')) {
+      const checkInterval = setInterval(() => {
+        if (window.google && window.google.maps) {
+          clearInterval(checkInterval);
+          callback();
+        }
+      }, 100);
+      return;
+    }
+    const script = document.createElement('script');
+    script.id = 'google-maps-api-script';
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initGoogleMap`;
+    script.async = true;
+    script.defer = true;
+    window.initGoogleMap = () => {
+      delete window.initGoogleMap;
+      callback();
+    };
+    document.head.appendChild(script);
+  }
+
+  function loadLeaflet(callback) {
+    if (window.L) {
+      callback();
+      return;
+    }
+    if (!document.getElementById('leaflet-css')) {
+      const link = document.createElement('link');
+      link.id = 'leaflet-css';
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(link);
+    }
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.async = true;
+    script.onload = () => callback();
+    document.head.appendChild(script);
+  }
+
+  function populateMap() {
+    const m = data.map || {
+      apiKey: "",
+      latitude: 23.073171,
+      longitude: 72.731736,
+      zoom: 8,
+      factoryName: "Huka Gam, Huka, Gujarat 382330",
+      address: "Huka Gam, Huka, Gujarat 382330",
+      phone: "+91 96625 50051",
+      email: "info@pureclarawater.com",
+      timings: "Mon - Sat: 9:00 AM - 6:00 PM"
+    };
+
+    // Update details card info
+    setText('map-pane-title', m.factoryName);
+    setText('map-pane-address', m.address);
+    setText('map-pane-phone', m.phone);
+    setText('map-pane-email', m.email);
+    setText('map-pane-timings', m.timings);
+
+    const dirBtn = document.getElementById('map-pane-directions-btn');
+    if (dirBtn) {
+      dirBtn.href = `https://www.google.com/maps/dir/23.0424576,72.5090304/${m.latitude},${m.longitude}`;
+    }
+
+    // Reset container to clear map instances cleanly
+    const wrapper = document.querySelector('.map-view-pane');
+    let container = document.getElementById('map-container');
+    if (wrapper && container) {
+      const newContainer = document.createElement('div');
+      newContainer.id = 'map-container';
+      newContainer.className = 'map-container';
+      container.remove();
+      wrapper.prepend(newContainer);
+    }
+
+    const hasKey = m.apiKey && m.apiKey.trim() !== "" && m.apiKey.indexOf("YOUR_") === -1;
+    if (hasKey) {
+      loadGoogleMaps(m.apiKey.trim(), () => {
+        renderGoogleMap(m);
+      });
+    } else {
+      loadLeaflet(() => {
+        renderLeafletMap(m);
+      });
+    }
+  }
+
+  function renderGoogleMap(m) {
+    const coords = { lat: parseFloat(m.latitude), lng: parseFloat(m.longitude) };
+    const mapContainer = document.getElementById('map-container');
+    if (!mapContainer) return;
+    const map = new google.maps.Map(mapContainer, {
+      center: coords,
+      zoom: parseInt(m.zoom) || 15,
+      styles: [], // Set to empty to use Google's standard light theme
+      disableDefaultUI: false,
+      zoomControl: true,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false
+    });
+
+    const markerIconUrl = 'data:image/svg+xml;utf-8,' + encodeURIComponent(waterDropSvg);
+
+    const marker = new google.maps.Marker({
+      position: coords,
+      map: map,
+      title: m.factoryName,
+      icon: {
+        url: markerIconUrl,
+        scaledSize: new google.maps.Size(38, 38),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(19, 38)
+      }
+    });
+
+    const infoWindow = new google.maps.InfoWindow({
+      content: `<div style="color:#0f172a;font-family:sans-serif;padding:5px;max-width:200px;">
+        <strong style="display:block;margin-bottom:3px;">${m.factoryName}</strong>
+        <span style="font-size:12px;color:#475569;">${m.address}</span>
+      </div>`
+    });
+
+    marker.addListener('click', () => {
+      infoWindow.open(map, marker);
+    });
+  }
+
+  function renderLeafletMap(m) {
+    const coords = [parseFloat(m.latitude), parseFloat(m.longitude)];
+    const mapContainer = document.getElementById('map-container');
+    if (!mapContainer) return;
+    const map = L.map(mapContainer, {
+      center: coords,
+      zoom: parseInt(m.zoom) || 15,
+      zoomControl: true
+    });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO'
+    }).addTo(map);
+
+    const customIcon = L.divIcon({
+      html: `<div class="custom-map-marker">${waterDropSvg}</div>`,
+      className: 'custom-map-marker-container',
+      iconSize: [38, 38],
+      iconAnchor: [19, 38],
+      popupAnchor: [0, -38]
+    });
+
+    const marker = L.marker(coords, { icon: customIcon }).addTo(map);
+    marker.bindPopup(`<div style="font-family:sans-serif;padding:2px;">
+      <strong style="display:block;margin-bottom:3px;color:#fff;">${m.factoryName}</strong>
+      <span style="font-size:12px;color:#94a3b8;">${m.address}</span>
+    </div>`).openPopup();
   }
 
   // ── INIT ──────────────────────────────────────────────────────────
