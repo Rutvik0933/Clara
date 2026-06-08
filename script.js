@@ -614,44 +614,92 @@
   // ── CONTACT FORM ──────────────────────────────────────────────────
   const contactForm = document.getElementById('contact-form');
   if (contactForm) {
+    const nameEl = contactForm.querySelector('#form-name');
+    const phoneEl = contactForm.querySelector('#form-phone');
+    const emailEl = contactForm.querySelector('#form-email');
+    const inquiryEl = contactForm.querySelector('#form-inquiry');
+    const messageEl = contactForm.querySelector('#form-message');
+
+    function showInputError(inputEl, message) {
+      if (!inputEl) return;
+      const parent = inputEl.closest('.form-group');
+      if (!parent) return;
+      inputEl.classList.add('error-border');
+      let errorMsg = parent.querySelector('.form-error-msg');
+      if (!errorMsg) {
+        errorMsg = document.createElement('span');
+        errorMsg.className = 'form-error-msg';
+        parent.appendChild(errorMsg);
+      }
+      errorMsg.textContent = message;
+    }
+
+    function clearInputError(inputEl) {
+      if (!inputEl) return;
+      inputEl.classList.remove('error-border');
+      const parent = inputEl.closest('.form-group');
+      if (parent) {
+        const errorMsg = parent.querySelector('.form-error-msg');
+        if (errorMsg) {
+          errorMsg.remove();
+        }
+      }
+    }
+
+    if (nameEl) nameEl.addEventListener('input', () => clearInputError(nameEl));
+    if (phoneEl) phoneEl.addEventListener('input', () => clearInputError(phoneEl));
+    if (emailEl) emailEl.addEventListener('input', () => clearInputError(emailEl));
+    if (inquiryEl) inquiryEl.addEventListener('change', () => clearInputError(inquiryEl));
+
     contactForm.addEventListener('submit', function (e) {
       e.preventDefault();
       const btn = document.getElementById('form-submit');
       
-      // Robust field selection relative to the form
-      const name = (this.querySelector('#form-name')?.value || "").trim();
-      const email = (this.querySelector('#form-email')?.value || "").trim();
-      const phone = (this.querySelector('#form-phone')?.value || "").trim();
-      const subject = (this.querySelector('#form-inquiry')?.value || "").trim();
-      const message = (this.querySelector('#form-message')?.value || "").trim();
+      // Clear all existing errors first
+      clearInputError(nameEl);
+      clearInputError(phoneEl);
+      clearInputError(emailEl);
+      clearInputError(inquiryEl);
+
+      let hasError = false;
+
+      const name = (nameEl?.value || "").trim();
+      const email = (emailEl?.value || "").trim();
+      const phone = (phoneEl?.value || "").trim();
+      const subject = (inquiryEl?.value || "").trim();
+      const message = (messageEl?.value || "").trim();
 
       // Form validation
       if (!name) {
-        alert('Please enter your name.');
-        return;
+        showInputError(nameEl, 'Please enter your name.');
+        hasError = true;
       }
       if (!phone) {
-        alert('Please enter your phone number.');
-        return;
-      }
-      // Simple numeric digits check
-      const numericPhone = phone.replace(/[\s-+()]/g, '');
-      if (numericPhone.length < 10) {
-        alert('Please enter a valid phone number (minimum 10 digits).');
-        return;
+        showInputError(phoneEl, 'Please enter your phone number.');
+        hasError = true;
+      } else {
+        const numericPhone = phone.replace(/[\s-+()]/g, '');
+        if (numericPhone.length < 10) {
+          showInputError(phoneEl, 'Please enter a valid phone number (minimum 10 digits).');
+          hasError = true;
+        }
       }
       if (!email) {
-        alert('Please enter your email address.');
-        return;
-      }
-      // Basic email pattern regex
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailPattern.test(email)) {
-        alert('Please enter a valid email address.');
-        return;
+        showInputError(emailEl, 'Please enter your email address.');
+        hasError = true;
+      } else {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+          showInputError(emailEl, 'Please enter a valid email address.');
+          hasError = true;
+        }
       }
       if (!subject) {
-        alert('Please select an Inquiry Type.');
+        showInputError(inquiryEl, 'Please select an Inquiry Type.');
+        hasError = true;
+      }
+
+      if (hasError) {
         return;
       }
 
@@ -682,6 +730,12 @@
           btn.textContent = 'Send Message';
           btn.disabled = false;
           this.reset();
+          
+          // Clear errors on reset
+          clearInputError(nameEl);
+          clearInputError(phoneEl);
+          clearInputError(emailEl);
+          clearInputError(inquiryEl);
           
           // Safely dispatch storage event (blocked on file:// but not an error)
           try {
