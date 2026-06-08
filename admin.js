@@ -145,6 +145,13 @@ function _initTabs() {
   document.addEventListener('keydown', function(e) {
     if(e.key === 'Escape') closeAdminModal();
   });
+  document.addEventListener('click', function(e) {
+    var resultsDiv = _el('map-search-results');
+    var input = _el('map-search-input');
+    if (resultsDiv && e.target !== input && !resultsDiv.contains(e.target)) {
+      resultsDiv.style.display = 'none';
+    }
+  });
 }
 
 // ── LOAD ALL TABS ─────────────────────────────────────────────────
@@ -159,6 +166,7 @@ function _loadAllTabs() {
   _loadDealerTab();
   _loadFooterTab();
   _loadArBeveragesTab();
+  _loadMapTab();
   _loadInquiriesTab();
   _updateInquiryBadge();
 }
@@ -475,6 +483,268 @@ function saveArBeverages() {
     description: _val('ar-desc-input')
   };
   _saveAndNotify('AR Beverages section saved!');
+}
+
+// ── MAP TAB ────────────────────────────────────────────────────────
+var _autocompleteInitialized = false;
+
+function _loadMapTab() {
+  var d = _getData();
+  var m = d.map || {
+    apiKey: "",
+    latitude: 23.073171,
+    longitude: 72.731736,
+    zoom: 8,
+    factoryName: "Huka Gam, Huka, Gujarat 382330",
+    address: "Huka Gam, Huka, Gujarat 382330",
+    phone: "+91 96625 50051",
+    email: "info@pureclarawater.com",
+    timings: "Mon - Sat: 9:00 AM - 6:00 PM"
+  };
+  _setVal('map-api-key', m.apiKey);
+  _setVal('map-lat', m.latitude);
+  _setVal('map-lng', m.longitude);
+  _setVal('map-zoom', m.zoom);
+  _setVal('map-factory-name', m.factoryName);
+  _setVal('map-address', m.address);
+  _setVal('map-phone', m.phone || '');
+  _setVal('map-email', m.email || '');
+  _setVal('map-timings', m.timings || '');
+  _setVal('map-search-input', '');
+
+  // Hide custom search results dropdown
+  var resultsDiv = _el('map-search-results');
+  if (resultsDiv) resultsDiv.style.display = 'none';
+
+  // Auto-init search autocomplete if key is saved
+  if (m.apiKey && m.apiKey.trim() !== "" && m.apiKey.indexOf("YOUR_") === -1) {
+    setTimeout(function() {
+      initSearchAutocomplete();
+    }, 300);
+  } else {
+    // If no Google API key, initialize OpenStreetMap search fallback automatically
+    setTimeout(function() {
+      initOsmSearchFallback();
+    }, 300);
+  }
+}
+
+function initSearchAutocomplete() {
+  var apiKey = _val('map-api-key');
+  if (!apiKey || apiKey.trim() === "" || apiKey.indexOf("YOUR_") !== -1) {
+    _showToast('ℹ️ Using free OpenStreetMap search (no Google key set).');
+    initOsmSearchFallback();
+    return;
+  }
+
+  if (window.google && window.google.maps && window.google.maps.places) {
+    _setupAutocomplete();
+    return;
+  }
+
+  var btn = _el('btn-init-search');
+  if (btn) btn.textContent = '⏳ Loading...';
+
+  var script = document.getElementById('admin-google-maps-api-script');
+  if (script) {
+    var checkInterval = setInterval(function() {
+      if (window.google && window.google.maps && window.google.maps.places) {
+        clearInterval(checkInterval);
+        if (btn) btn.textContent = 'Initialize Search';
+        _setupAutocomplete();
+      }
+    }, 100);
+    return;
+  }
+
+  script = document.createElement('script');
+  script.id = 'admin-google-maps-api-script';
+  script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(apiKey.trim()) + '&libraries=places&callback=initAdminGoogleMapPlaces';
+  script.async = true;
+  script.defer = true;
+  
+  window.initAdminGoogleMapPlaces = function() {
+    delete window.initAdminGoogleMapPlaces;
+    if (btn) btn.textContent = 'Initialize Search';
+    _setupAutocomplete();
+  };
+
+  document.head.appendChild(script);
+}
+
+var _osmSearchInitialized = false;
+
+function initOsmSearchFallback() {
+  var input = _el('map-search-input');
+  if (!input) return;
+
+  if (_osmSearchInitialized || _autocompleteInitialized) {
+    return;
+  }
+
+  var searchTimeout = null;
+  input.addEventListener('input', function() {
+    if (_autocompleteInitialized) return;
+
+    clearTimeout(searchTimeout);
+    var query = input.value.trim();
+    if (query.length < 3) {
+      var resultsDiv = _el('map-search-results');
+      if (resultsDiv) resultsDiv.style.display = 'none';
+      return;
+    }
+    searchTimeout = setTimeout(function() {
+      fetchNominatimSearch(query);
+    }, 600);
+  });
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      clearTimeout(searchTimeout);
+      var query = input.value.trim();
+      if (query.length >= 2) {
+        fetchNominatimSearch(query);
+      }
+    }
+  });
+
+  _osmSearchInitialized = true;
+  var btn = _el('btn-init-search');
+  if (btn) {
+    btn.textContent = '✓ OSM Active';
+    btn.style.background = 'rgba(74, 222, 128, 0.2)';
+    btn.style.border = '1px solid rgba(74, 222, 128, 0.4)';
+    btn.style.color = 'var(--success)';
+  }
+}
+
+function fetchNominatimSearch(query) {
+  var resultsDiv = _el('map-search-results');
+  if (!resultsDiv) return;
+
+  resultsDiv.innerHTML = '<div style="padding:12px;color:var(--text-secondary);font-size:0.82rem;">⏳ Searching OpenStreetMap...</div>';
+  resultsDiv.style.display = 'block';
+
+  var url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(query) + '&limit=5';
+
+  fetch(url)
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (!data || data.length === 0) {
+        resultsDiv.innerHTML = '<div style="padding:12px;color:var(--text-secondary);font-size:0.82rem;">❌ No locations found. Try a different query.</div>';
+        return;
+      }
+      resultsDiv.innerHTML = data.map(function(item) {
+        var cleanAddress = escapeJsString(item.display_name);
+        return '<div class="search-result-item" onclick="selectNominatimResult(' + 
+          item.lat + ',' + item.lon + ',\'' + cleanAddress + '\')" ' +
+          'style="padding:12px 14px; border-bottom:1px solid rgba(14,116,144,0.12); cursor:pointer; font-size:0.82rem; color:var(--text-primary); transition:background 0.2s; line-height:1.4;">' + 
+          item.display_name + 
+        '</div>';
+      }).join('');
+
+      resultsDiv.querySelectorAll('.search-result-item').forEach(function(el) {
+        el.addEventListener('mouseenter', function() { el.style.background = 'rgba(14,116,144,0.15)'; });
+        el.addEventListener('mouseleave', function() { el.style.background = 'transparent'; });
+      });
+    })
+    .catch(function(err) {
+      console.error("OSM Nominatim error:", err);
+      resultsDiv.innerHTML = '<div style="padding:12px;color:var(--danger);font-size:0.82rem;">❌ Search failed. Check network connection.</div>';
+    });
+}
+
+function selectNominatimResult(lat, lon, displayName) {
+  _setVal('map-lat', lat);
+  _setVal('map-lng', lon);
+  _setVal('map-address', displayName);
+
+  var parts = displayName.split(',');
+  var title = parts[0] ? parts[0].trim() : 'Pure CLARA Factory';
+  _setVal('map-factory-name', title);
+  _setVal('map-search-input', displayName);
+
+  var resultsDiv = _el('map-search-results');
+  if (resultsDiv) resultsDiv.style.display = 'none';
+
+  _showToast('📍 Selected: ' + title);
+}
+
+function escapeJsString(str) {
+  return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+}
+
+function _setupAutocomplete() {
+  var input = _el('map-search-input');
+  if (!input) return;
+
+  if (_autocompleteInitialized) {
+    _showToast('✅ Search Autocomplete is already active!');
+    return;
+  }
+
+  try {
+    var autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.addListener('place_changed', function() {
+      var place = autocomplete.getPlace();
+      if (!place.geometry || !place.geometry.location) {
+        _showToast('❌ No details available for input: \'' + place.name + '\'', 'error');
+        return;
+      }
+
+      var lat = place.geometry.location.lat();
+      var lng = place.geometry.location.lng();
+
+      _setVal('map-lat', lat);
+      _setVal('map-lng', lng);
+      _setVal('map-address', place.formatted_address || place.name);
+      _setVal('map-factory-name', place.name);
+
+      _showToast('📍 Selected: ' + place.name);
+    });
+
+    _autocompleteInitialized = true;
+    _showToast('✅ Google Places Autocomplete enabled!');
+    var btn = _el('btn-init-search');
+    if (btn) {
+      btn.textContent = '✓ Active';
+      btn.style.background = 'var(--gradient-gold)';
+      btn.style.color = 'var(--black)';
+    }
+  } catch (err) {
+    console.error("Error setting up places autocomplete:", err);
+    _showToast('❌ Failed to enable search autocomplete.', 'error');
+  }
+}
+
+function saveMapSettings() {
+  var d = _getData();
+  var lat = parseFloat(_val('map-lat'));
+  var lng = parseFloat(_val('map-lng'));
+  var zoom = parseInt(_val('map-zoom'));
+
+  if (isNaN(lat) || isNaN(lng)) {
+    _showToast('❌ Latitude and Longitude must be valid numbers.', 'error');
+    return;
+  }
+  if (isNaN(zoom) || zoom < 1 || zoom > 20) {
+    _showToast('❌ Zoom level must be a number between 1 and 20.', 'error');
+    return;
+  }
+
+  d.map = {
+    apiKey: _val('map-api-key'),
+    latitude: lat,
+    longitude: lng,
+    zoom: zoom,
+    factoryName: _val('map-factory-name') || 'Pure CLARA Factory',
+    address: _val('map-address') || 'Gujarat, India',
+    phone: _val('map-phone'),
+    email: _val('map-email'),
+    timings: _val('map-timings')
+  };
+  _saveAndNotify('Factory Map settings saved!');
 }
 
 // ── SETTINGS ───────────────────────────────────────────────────────
