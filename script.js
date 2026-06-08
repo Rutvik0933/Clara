@@ -625,18 +625,42 @@
       const subject = (this.querySelector('#form-inquiry')?.value || "").trim();
       const message = (this.querySelector('#form-message')?.value || "").trim();
 
-      // Basic validation
+      // Form validation
       if (!name) {
         alert('Please enter your name.');
+        return;
+      }
+      if (!phone) {
+        alert('Please enter your phone number.');
+        return;
+      }
+      // Simple numeric digits check
+      const numericPhone = phone.replace(/[\s-+()]/g, '');
+      if (numericPhone.length < 10) {
+        alert('Please enter a valid phone number (minimum 10 digits).');
+        return;
+      }
+      if (!email) {
+        alert('Please enter your email address.');
+        return;
+      }
+      // Basic email pattern regex
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+      if (!subject) {
+        alert('Please select an Inquiry Type.');
         return;
       }
 
       const inquiry = {
         id: Date.now(),
         name: name,
-        email: email || 'Not shared',
-        phone: phone || 'Not shared',
-        subject: subject || 'General Query',
+        email: email,
+        phone: phone,
+        subject: subject,
         message: message || '(No message content)',
         date: new Date().toLocaleString(),
         status: 'new'
