@@ -1,0 +1,15 @@
+{
+  "name": "Pure CLARA Water",
+  "short_name": "Pure CLARA",
+  "icons": [
+    {
+      "src": "/images/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "theme_color": "#0a1628",
+  "background_color": "#0a1628",
+  "display": "standalone"
+}

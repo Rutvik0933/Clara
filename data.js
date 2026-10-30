@@ -6,7 +6,7 @@ const CLARA_KEY = 'claraData';
 
 const defaultData = {
   hero: {
-    tagline: "Feel The Purity in every drop — sourced from pristine river origins, purified to perfection.",
+    tagline: "Feel the purity in every drop with Pure CLARA packaged drinking water by AR Beverages, available for homes, offices, events and businesses in Gujarat.",
     badge: "Premium Packaged Drinking Water",
     image: "images/clara_real_bottle.png"
   },
@@ -19,7 +19,7 @@ const defaultData = {
       id: 1,
       image: "images/clara_real_bottle.png",
       badge: "Bestseller",
-      name: "Clara 750ml",
+      name: "Pure CLARA 750ml",
       shortDesc: "Non-Carbonated | Packaged Drinking Water",
       description: "Our signature 750ml bottle. Perfect companion for travel, gym, and daily use. Purified from pristine river sources using advanced 7-stage filtration. BIS certified, zero additives.",
       specs: [
@@ -37,7 +37,7 @@ const defaultData = {
       id: 2,
       image: "images/clara_products_lineup.png",
       badge: "Popular",
-      name: "Clara 200ml",
+      name: "Pure CLARA 200ml",
       shortDesc: "Compact | Travel Friendly",
       description: "Portable 200ml bottle ideal for events, functions, offices, and travel. Same purity, convenient size. Great for bulk orders and events.",
       specs: [
@@ -55,7 +55,7 @@ const defaultData = {
       id: 3,
       image: "images/clara_products_lineup.png",
       badge: "Value Pack",
-      name: "Clara 1000ml",
+      name: "Pure CLARA 1000ml",
       shortDesc: "Family Size | Best Value",
       description: "1-litre family pack. Ideal for home, office, and restaurants. Long-lasting hydration with superior purity guaranteed.",
       specs: [
@@ -73,7 +73,7 @@ const defaultData = {
       id: 4,
       image: "images/clara_products_lineup.png",
       badge: "Bulk",
-      name: "Clara 20L Jar",
+      name: "Pure CLARA 20L Jar",
       shortDesc: "Office & Home Delivery",
       description: "20-litre water jar for home and office dispensers. Our most economical option for continuous hydration needs.",
       specs: [
@@ -122,9 +122,10 @@ const defaultData = {
   contact: {
     phone: "+91 96625 50051",
     email: "info@pureclarawater.com",
-    address: "Gujarat, India",
+    address: "Huka Gam, Huka, Gujarat 382330",
     instagram: "@purewater_clara",
-    whatsapp: "919662550051"
+    whatsapp: "919662550051",
+    googleReviewUrl: "https://g.page/r/Cf1dv8ie5BkiECE/review"
   },
   dealer: {
     phone: "9662550051",
@@ -152,7 +153,7 @@ const defaultData = {
   },
   footer: {
     description: "Your Ultimate Hydration Partner. Pure water from pristine river sources, delivered with care.",
-    copyright: "© 2024 Pure CLARA. All Rights Reserved. | Non-Carbonated Packaged Drinking Water"
+    copyright: "© 2026 PureLuxurious Water – Pure CLARA by AR Beverages. All Rights Reserved. | Premium Non-Carbonated Packaged Drinking Water | Gujarat, India"
   },
   map: {
     apiKey: "",

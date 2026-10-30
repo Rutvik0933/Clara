@@ -407,6 +407,12 @@ button { cursor: none; border: none; background: none; }
 /* ===== TESTIMONIALS ===== */
 .testimonials { padding: 7rem 1.5rem; background: var(--dark-2); }
 .testimonials-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
+.google-review-summary { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0.5rem; margin: -1.5rem auto 2rem; color: var(--text-secondary); font-size: 0.9rem; }
+.gmp-attribution { display: inline-block; padding: 0.3rem 0.55rem; border-radius: 4px; background: #fff; color: #5e5e5e; font-family: Roboto, Arial, sans-serif; font-size: 0.82rem; font-weight: 400; letter-spacing: normal; white-space: nowrap; }
+.google-review-summary strong { color: var(--white); }
+.google-review-stars { color: var(--gold); letter-spacing: 0.08em; }
+.google-review-notice { max-width: 760px; text-align: center; color: var(--text-muted); font-size: 0.75rem; line-height: 1.55; margin: -1rem auto 2rem; }
+.google-review-notice a, .google-review-source { color: var(--blue-light); text-decoration: underline; }
 .testimonial-card {
   background: var(--dark-3); border: var(--border-glow);
   border-radius: var(--radius); padding: 2rem;
@@ -417,8 +423,27 @@ button { cursor: none; border: none; background: none; }
 .testi-text { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.25rem; font-style: italic; }
 .testi-author { display: flex; align-items: center; gap: 0.75rem; }
 .testi-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--gradient-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--white); font-size: 1rem; flex-shrink: 0; }
+.testi-avatar img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
 .testi-name { font-weight: 600; color: var(--white); font-size: 0.85rem; }
+.testi-name a { color: inherit; text-decoration: underline; text-decoration-color: rgba(255,255,255,0.35); }
 .testi-role { font-size: 0.75rem; color: var(--text-muted); }
+.google-review-source { display: inline-block; margin-top: 1rem; font-size: 0.78rem; }
+.google-review-report { display: inline-block; margin: 1rem 0 0 0.8rem; color: var(--text-muted); font-size: 0.72rem; text-decoration: underline; }
+.review-cta { text-align: center; color: var(--text-secondary); margin: 2rem auto 0; font-size: 0.9rem; }
+.review-cta p { margin-bottom: 1rem; }
+.google-review-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.8rem 1.2rem; border-radius: 999px; background: #fff; color: #4285f4; font-weight: 700; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18); transition: var(--trans); }
+.google-review-btn:hover { transform: translateY(-2px); color: #1a73e8; box-shadow: 0 12px 28px rgba(66, 133, 244, 0.28); }
+
+/* ===== FAQ ===== */
+.faq { padding: 7rem 1.5rem; background: var(--dark); }
+.faq-container { max-width: 920px; }
+.faq-list { display: grid; gap: 0.85rem; }
+.faq-item { background: var(--dark-3); border: var(--border-glow); border-radius: var(--radius-sm); padding: 0 1.25rem; }
+.faq-item summary { color: var(--white); cursor: pointer; font-weight: 600; padding: 1.2rem 2rem 1.2rem 0; position: relative; list-style: none; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: '+'; color: var(--blue-light); font-size: 1.4rem; position: absolute; right: 0; top: 0.9rem; }
+.faq-item[open] summary::after { content: '–'; }
+.faq-item p { color: var(--text-secondary); line-height: 1.7; margin: 0 0 1.2rem; max-width: 760px; }
 
 /* ===== DEALERSHIP ===== */
 .dealership { padding: 7rem 1.5rem; position: relative; overflow: hidden; }

@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- ===== PRIMARY SEO META TAGS ===== -->
-  <title>PureLuxurious Water | Pure CLARA – Premium Packaged Drinking Water Gujarat</title>
-  <meta name="description" content="PureLuxurious Water – Pure CLARA is Gujarat's premium packaged drinking water brand by AR Beverages. 7-stage purified, BIS certified, river-sourced water in 200ml, 500ml, 750ml, 1L & 20L. Feel the purity in every drop." />
-  <meta name="keywords" content="PureLuxurious Water, Pure CLARA water, pureluxuriouswater.com, AR Beverages, packaged drinking water Gujarat, premium water brand India, BIS certified water, 20L water jar Gujarat, pure water bottle India, Clara water" />
+  <title>Pure CLARA Water | Packaged Drinking Water in Gujarat</title>
+  <meta name="description" content="Pure CLARA by AR Beverages offers premium packaged drinking water in Gujarat. Discover BIS-certified bottles and 20L jars for homes, offices, events and businesses." />
   <meta name="author" content="Pure CLARA – AR Beverages" />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
   <meta name="theme-color" content="#0a1628" />
+  <!-- Google Search uses this square brand favicon instead of the default globe. -->
+  <link rel="icon" href="/images/favicon-512.png" type="image/png" sizes="512x512" />
+  <link rel="apple-touch-icon" href="/images/favicon-512.png" />
+  <link rel="manifest" href="/site.webmanifest" />
 
   <!-- ===== CANONICAL URL ===== -->
   <link rel="canonical" href="https://pureluxuriouswater.com/" />
@@ -33,81 +36,80 @@
   <meta name="twitter:description" content="Gujarat's premium packaged drinking water. BIS certified, 7-stage purified. Feel the purity in every drop." />
   <meta name="twitter:image" content="https://pureluxuriouswater.com/images/clara_real_bottle.png" />
 
-  <!-- ===== STRUCTURED DATA – Organization ===== -->
+  <!-- ===== STRUCTURED DATA – Brand & product ===== -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "PureLuxurious Water – Pure CLARA",
-    "alternateName": ["Pure CLARA", "AR Beverages", "PureLuxurious Water"],
-    "url": "https://pureluxuriouswater.com",
-    "logo": "https://pureluxuriouswater.com/images/clara_real_bottle.png",
-    "description": "PureLuxurious Water is a premium packaged drinking water brand under AR Beverages, Gujarat, India. Our Pure CLARA water is BIS certified and purified through a 7-stage process from pristine river sources.",
-    "foundingDate": "2024",
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "telephone": "+91-96625-50051",
-      "contactType": "customer service",
-      "areaServed": "IN",
-      "availableLanguage": ["English", "Gujarati", "Hindi"]
-    },
-    "address": {
-      "@type": "PostalAddress",
-      "addressRegion": "Gujarat",
-      "addressCountry": "IN"
-    },
-    "sameAs": [
-      "https://instagram.com/purewater_clara",
-      "https://wa.me/919662550051"
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://pureluxuriouswater.com/#website",
+        "url": "https://pureluxuriouswater.com/",
+        "name": "Pure CLARA",
+        "alternateName": "PureLuxurious Water"
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://pureluxuriouswater.com/#organization",
+        "name": "AR Beverages",
+        "alternateName": ["Pure CLARA", "PureLuxurious Water"],
+        "url": "https://pureluxuriouswater.com/",
+        "logo": "https://pureluxuriouswater.com/images/clara_logo.png",
+        "description": "AR Beverages is the company behind Pure CLARA packaged drinking water in Gujarat, India.",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+91-96625-50051",
+          "contactType": "customer service",
+          "areaServed": "IN",
+          "availableLanguage": ["English", "Gujarati", "Hindi"]
+        },
+        "sameAs": ["https://instagram.com/purewater_clara"]
+      },
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://pureluxuriouswater.com/#localbusiness",
+        "name": "Pure CLARA Water by AR Beverages",
+        "url": "https://pureluxuriouswater.com/",
+        "image": "https://pureluxuriouswater.com/images/clara_real_bottle.png",
+        "telephone": "+91-96625-50051",
+        "email": "info@pureclarawater.com",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Huka Gam, Huka",
+          "addressRegion": "Gujarat",
+          "postalCode": "382330",
+          "addressCountry": "IN"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 23.073171,
+          "longitude": 72.731736
+        },
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        "priceRange": "₹"
+      },
+      {
+        "@type": "Product",
+        "@id": "https://pureluxuriouswater.com/#clara-750ml",
+        "name": "Pure CLARA 750 ml Packaged Drinking Water",
+        "brand": { "@type": "Brand", "name": "Pure CLARA" },
+        "description": "750 ml non-carbonated packaged drinking water from Pure CLARA.",
+        "image": "https://pureluxuriouswater.com/images/clara_real_bottle.png",
+        "url": "https://pureluxuriouswater.com/#products",
+        "offers": {
+          "@type": "Offer",
+          "price": "20",
+          "priceCurrency": "INR",
+          "availability": "https://schema.org/InStock",
+          "url": "https://pureluxuriouswater.com/#products"
+        }
+      }
     ]
-  }
-  </script>
-
-  <!-- ===== STRUCTURED DATA – Local Business ===== -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "Pure CLARA – PureLuxurious Water",
-    "image": "https://pureluxuriouswater.com/images/clara_real_bottle.png",
-    "url": "https://pureluxuriouswater.com",
-    "telephone": "+91-96625-50051",
-    "email": "info@pureclarawater.com",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Gujarat",
-      "addressRegion": "Gujarat",
-      "addressCountry": "IN"
-    },
-    "openingHoursSpecification": {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-      "opens": "09:00",
-      "closes": "18:00"
-    },
-    "priceRange": "₹",
-    "servesCuisine": "Packaged Drinking Water"
-  }
-  </script>
-
-  <!-- ===== STRUCTURED DATA – Product ===== -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": "Pure CLARA Premium Packaged Drinking Water",
-    "brand": {
-      "@type": "Brand",
-      "name": "PureLuxurious Water – Pure CLARA"
-    },
-    "description": "BIS certified, 7-stage purified premium packaged drinking water sourced from pristine rivers. Available in 200ml, 500ml, 750ml, 1L and 20L sizes.",
-    "image": "https://pureluxuriouswater.com/images/clara_real_bottle.png",
-    "url": "https://pureluxuriouswater.com",
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "5.0",
-      "reviewCount": "24"
-    }
   }
   </script>
 
@@ -181,7 +183,7 @@
       <div class="hero-text">
         <p class="hero-badge reveal-up">Premium Packaged Drinking Water</p>
         <h1 class="hero-title reveal-up">
-          PureLuxurious Water – Clara,<br />
+          Pure CLARA Water,<br />
           <span class="script-font">Your Ultimate Hydration Partner</span>
         </h1>
         <p class="hero-sub reveal-up" id="hero-tagline">Feel The Purity in every drop — PureLuxurious Water by Pure CLARA, sourced from pristine river origins, purified to perfection through our 7-stage BIS certified process.</p>
@@ -323,7 +325,23 @@
         <p class="section-sub">Available in multiple sizes to suit every lifestyle and occasion</p>
       </div>
       <div class="products-grid" id="products-grid">
-        <!-- Products injected via JS from data store -->
+        <!-- Kept in HTML so product details are available before JavaScript runs. -->
+        <article class="product-card reveal-up">
+          <div class="product-card-img"><img src="images/clara_real_bottle.png" alt="Pure CLARA 750 ml packaged drinking water bottle" loading="lazy" /><div class="product-badge">Bestseller</div></div>
+          <div class="product-card-body"><h3>Pure CLARA 750 ml</h3><p class="product-desc">Non-carbonated packaged drinking water</p><div class="product-specs"><span class="spec">Volume: 750 ml</span><span class="spec">Type: Non-Carbonated</span><span class="spec">Certification: BIS Certified</span></div><div class="product-footer"><span class="product-price">₹20</span><a class="product-btn" href="#contact">Enquire now</a></div></div>
+        </article>
+        <article class="product-card reveal-up">
+          <div class="product-card-img"><img src="images/clara_products_lineup.png" alt="Pure CLARA 200 ml packaged drinking water bottle" loading="lazy" /><div class="product-badge">Popular</div></div>
+          <div class="product-card-body"><h3>Pure CLARA 200 ml</h3><p class="product-desc">Compact packaged drinking water for events and travel</p><div class="product-specs"><span class="spec">Volume: 200 ml</span><span class="spec">Type: Non-Carbonated</span><span class="spec">Certification: BIS Certified</span></div><div class="product-footer"><span class="product-price">₹10</span><a class="product-btn" href="#contact">Enquire now</a></div></div>
+        </article>
+        <article class="product-card reveal-up">
+          <div class="product-card-img"><img src="images/clara_products_lineup.png" alt="Pure CLARA 1 litre packaged drinking water bottle" loading="lazy" /><div class="product-badge">Value Pack</div></div>
+          <div class="product-card-body"><h3>Pure CLARA 1 Litre</h3><p class="product-desc">Family-size non-carbonated packaged drinking water</p><div class="product-specs"><span class="spec">Volume: 1 Litre</span><span class="spec">Type: Non-Carbonated</span><span class="spec">Certification: BIS Certified</span></div><div class="product-footer"><span class="product-price">₹30</span><a class="product-btn" href="#contact">Enquire now</a></div></div>
+        </article>
+        <article class="product-card reveal-up">
+          <div class="product-card-img"><img src="images/clara_products_lineup.png" alt="Pure CLARA 20 litre packaged drinking water jar" loading="lazy" /><div class="product-badge">Bulk</div></div>
+          <div class="product-card-body"><h3>Pure CLARA 20L Jar</h3><p class="product-desc">Packaged drinking water jar for home and office use</p><div class="product-specs"><span class="spec">Volume: 20 Litres</span><span class="spec">Type: Non-Carbonated</span><span class="spec">Certification: BIS Certified</span></div><div class="product-footer"><span class="product-price">₹60</span><a class="product-btn" href="#contact">Enquire now</a></div></div>
+        </article>
       </div>
     </div>
   </section>
@@ -384,8 +402,46 @@
         <p class="section-tag">What People Say</p>
         <h2 class="section-title">Customer <span class="script-font">Reviews</span></h2>
       </div>
+      <div id="google-review-summary" class="google-review-summary" hidden aria-live="polite">
+        <span class="gmp-attribution">Google Maps</span>
+        <strong id="google-review-rating"></strong>
+        <span class="google-review-stars" aria-hidden="true">★★★★★</span>
+        <span id="google-review-count"></span>
+      </div>
+      <p id="google-review-notice" class="google-review-notice" hidden>Reviews from Google Maps are ordered by relevance. Google reviews are subject to <a href="https://support.google.com/contributionpolicy/answer/7400114" target="_blank" rel="noopener noreferrer">Google’s review policy</a>.</p>
       <div class="testimonials-wrap" id="testimonials-wrap">
-        <!-- Injected via JS -->
+        <!-- These reviews are visible in the initial HTML as well as after JavaScript loads. -->
+        <article class="testimonial-card reveal-up"><div class="testi-stars" aria-label="5 out of 5 stars">★★★★★</div><p class="testi-text">“Clara water has become part of my daily routine. The purity is exceptional — you can taste the difference compared to other brands.”</p><div class="testi-author"><div class="testi-avatar">R</div><div><div class="testi-name">Rahul M.</div><div class="testi-role">Fitness Trainer</div></div></div></article>
+        <article class="testimonial-card reveal-up"><div class="testi-stars" aria-label="5 out of 5 stars">★★★★★</div><p class="testi-text">“We switched all our tables to Clara bottles. Our customers love it and always ask about the brand. Highly recommend for businesses.”</p><div class="testi-author"><div class="testi-avatar">P</div><div><div class="testi-name">Priya S.</div><div class="testi-role">Restaurant Owner</div></div></div></article>
+        <article class="testimonial-card reveal-up"><div class="testi-stars" aria-label="5 out of 5 stars">★★★★★</div><p class="testi-text">“Bulk ordered 200ml bottles for our corporate event. Perfect packaging, on-time delivery, and everyone appreciated the quality.”</p><div class="testi-author"><div class="testi-avatar">J</div><div><div class="testi-name">Jatin P.</div><div class="testi-role">Event Organizer</div></div></div></article>
+      </div>
+      <div class="review-cta">
+        <p>Have you tried Pure CLARA? Your genuine feedback helps other customers choose with confidence.</p>
+        <a id="google-review-link" class="google-review-btn" href="https://g.page/r/Cf1dv8ie5BkiECE/review" target="_blank" rel="noopener noreferrer">★ Rate us on Google</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ SECTION ===== -->
+  <section id="faq" class="faq">
+    <div class="container faq-container">
+      <div class="section-header reveal-up">
+        <p class="section-tag">Pure CLARA Help</p>
+        <h2 class="section-title">Frequently Asked <span class="script-font">Questions</span></h2>
+      </div>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>What is Pure CLARA water?</summary>
+          <p>Pure CLARA is AR Beverages’ range of non-carbonated packaged drinking water, available in bottle and jar sizes for everyday hydration, events and business use.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Which Pure CLARA bottle sizes are available?</summary>
+          <p>The current range includes 200 ml, 750 ml, 1 litre and 20 litre packaged drinking-water options. Contact us to confirm availability for your order.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Can I place a bulk or dealership enquiry?</summary>
+          <p>Yes. Use the contact form or call us for bulk orders, events, offices, restaurants and dealership enquiries in Gujarat.</p>
+        </details>
       </div>
     </div>
   </section>
@@ -418,7 +474,7 @@
           <div class="contact-items" id="contact-items">
             <div class="contact-item"><div class="ci-icon">📞</div><div><strong>Phone</strong><span id="contact-phone">+91 96625 50051</span></div></div>
             <div class="contact-item"><div class="ci-icon">📧</div><div><strong>Email</strong><span id="contact-email">info@pureclarawater.com</span></div></div>
-            <div class="contact-item"><div class="ci-icon">📍</div><div><strong>Address</strong><span id="contact-address">Gujarat, India</span></div></div>
+            <div class="contact-item"><div class="ci-icon">📍</div><div><strong>Address</strong><span id="contact-address">Huka Gam, Huka, Gujarat 382330</span></div></div>
           </div>
           <div class="social-links">
             <a href="https://instagram.com/purewater_clara" target="_blank" class="social-btn insta" id="social-insta-btn" aria-label="Instagram">
@@ -554,11 +610,11 @@
           <h4>Contact</h4>
           <span id="footer-phone">+91 96625 50051</span>
           <span id="footer-email">info@pureclarawater.com</span>
-          <span id="footer-address">Gujarat, India</span>
+          <span id="footer-address">Huka Gam, Huka, Gujarat 382330</span>
         </div>
       </div>
       <div class="footer-bottom">
-        <p id="footer-copyright">© 2025 PureLuxurious Water – Pure CLARA by AR Beverages. All Rights Reserved. | Premium Non-Carbonated Packaged Drinking Water | Gujarat, India</p>
+        <p id="footer-copyright">© 2026 PureLuxurious Water – Pure CLARA by AR Beverages. All Rights Reserved. | Premium Non-Carbonated Packaged Drinking Water | Gujarat, India</p>
         <p class="footer-tagline">@purewater_clara | pureluxuriouswater.com</p>
       </div>
     </div>

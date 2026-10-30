@@ -321,6 +321,7 @@
     populateBenefits();
     populateGallery();
     populateTestimonials();
+    loadGoogleReviews();
     populateContact();
     populateDealer();
     populateFooter();
@@ -452,6 +453,114 @@
     document.querySelectorAll('.reveal-up').forEach(el => revealObs.observe(el));
   }
 
+  // Google reviews are retrieved by our same-origin PHP endpoint. The endpoint
+  // owns the OAuth credentials; none are exposed in the browser.
+  async function loadGoogleReviews() {
+    const summary = document.getElementById('google-review-summary');
+    const notice = document.getElementById('google-review-notice');
+    const wrap = document.getElementById('testimonials-wrap');
+    if (!summary || !wrap) return;
+
+    try {
+      const response = await fetch('/api/google-reviews', {
+        headers: { Accept: 'application/json' },
+        credentials: 'same-origin'
+      });
+      if (!response.ok) return;
+
+      const payload = await response.json();
+      if (!Array.isArray(payload.reviews) || !payload.reviews.length) return;
+
+      const rating = Number(payload.averageRating);
+      const reviewCount = Number(payload.totalReviewCount);
+      if (Number.isFinite(rating) && rating > 0) {
+        document.getElementById('google-review-rating').textContent = `${rating.toFixed(1)} / 5`;
+        document.getElementById('google-review-count').textContent = `Google rating from ${reviewCount || payload.reviews.length} review${(reviewCount || payload.reviews.length) === 1 ? '' : 's'}`;
+        summary.hidden = false;
+        if (notice) notice.hidden = false;
+      }
+
+      wrap.replaceChildren();
+      payload.reviews.slice(0, 6).forEach(review => wrap.appendChild(createGoogleReviewCard(review)));
+      document.querySelectorAll('.testimonials-wrap .reveal-up').forEach(el => revealObs.observe(el));
+      applyStaggerToGrids();
+    } catch (error) {
+      // Keep the existing local testimonials visible if the Google service is unavailable.
+      console.warn('Google reviews could not be loaded.', error);
+    }
+  }
+
+  function createGoogleReviewCard(review) {
+    const rating = Math.max(1, Math.min(5, Number(review.rating) || 5));
+    const author = typeof review.author === 'string' && review.author.trim() ? review.author.trim() : 'Google customer';
+    const text = typeof review.text === 'string' && review.text.trim() ? review.text.trim() : 'Shared a rating on Google.';
+    const date = typeof review.date === 'string' && review.date.trim() ? review.date.trim() : 'Google review';
+    const card = document.createElement('article');
+    card.className = 'testimonial-card reveal-up google-review-card';
+
+    const stars = document.createElement('div');
+    stars.className = 'testi-stars';
+    stars.setAttribute('aria-label', `${rating} out of 5 stars`);
+    stars.textContent = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+
+    const quote = document.createElement('p');
+    quote.className = 'testi-text';
+    quote.textContent = `“${text}”`;
+
+    const authorRow = document.createElement('div');
+    authorRow.className = 'testi-author';
+    const avatar = document.createElement('div');
+    avatar.className = 'testi-avatar';
+    if (typeof review.authorPhotoUri === 'string' && review.authorPhotoUri.startsWith('https://')) {
+      const avatarImage = document.createElement('img');
+      avatarImage.src = review.authorPhotoUri;
+      avatarImage.alt = '';
+      avatarImage.referrerPolicy = 'no-referrer';
+      avatar.appendChild(avatarImage);
+    } else {
+      avatar.textContent = author.charAt(0).toUpperCase();
+    }
+    const authorInfo = document.createElement('div');
+    const authorName = document.createElement('div');
+    authorName.className = 'testi-name';
+    if (typeof review.authorUri === 'string' && review.authorUri.startsWith('https://')) {
+      const authorLink = document.createElement('a');
+      authorLink.href = review.authorUri;
+      authorLink.target = '_blank';
+      authorLink.rel = 'noopener noreferrer';
+      authorLink.textContent = author;
+      authorName.appendChild(authorLink);
+    } else {
+      authorName.textContent = author;
+    }
+    const authorMeta = document.createElement('div');
+    authorMeta.className = 'testi-role';
+    authorMeta.textContent = date;
+    authorInfo.append(authorName, authorMeta);
+    authorRow.append(avatar, authorInfo);
+    if (typeof review.googleMapsUri === 'string' && review.googleMapsUri.startsWith('https://')) {
+      const sourceLink = document.createElement('a');
+      sourceLink.className = 'google-review-source';
+      sourceLink.href = review.googleMapsUri;
+      sourceLink.target = '_blank';
+      sourceLink.rel = 'noopener noreferrer';
+      sourceLink.textContent = 'View on Google Maps';
+      card.append(stars, quote, authorRow, sourceLink);
+    } else {
+      card.append(stars, quote, authorRow);
+    }
+    if (typeof review.flagContentUri === 'string' && review.flagContentUri.startsWith('https://')) {
+      const reportLink = document.createElement('a');
+      reportLink.className = 'google-review-report';
+      reportLink.href = review.flagContentUri;
+      reportLink.target = '_blank';
+      reportLink.rel = 'noopener noreferrer';
+      reportLink.textContent = 'Report review';
+      card.append(reportLink);
+    }
+    return card;
+  }
+
   function populateContact() {
     const c = data.contact;
     setText('contact-phone', c.phone);
@@ -464,6 +573,8 @@
     if (wabtn) wabtn.href = `https://wa.me/${c.whatsapp}`;
     const instabtn = document.getElementById('social-insta-btn');
     if (instabtn) instabtn.href = `https://instagram.com/${c.instagram.replace('@', '')}`;
+    const googleReviewLink = document.getElementById('google-review-link');
+    if (googleReviewLink && c.googleReviewUrl) googleReviewLink.href = c.googleReviewUrl;
   }
 
   function populateDealer() {
@@ -1604,8 +1715,11 @@
       zoomControl: true
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap &copy; CARTO'
+    // Use the key-free OpenStreetMap layer until a Google Maps browser key is set.
+    // This avoids the Carto "API KEY REQUIRED" tile error seen on the public site.
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors'
     }).addTo(map);
 
     const customIcon = L.divIcon({
