@@ -8,7 +8,7 @@ const defaultData = {
   hero: {
     tagline: "Pure CLARA Water — also known as CLARA Water — is premium packaged drinking water by AR Beverages for homes, offices, events and businesses in Gujarat.",
     badge: "Premium Packaged Drinking Water",
-    image: "images/clara-200ml-splash-hd.jpg"
+    image: "images/clara-200ml-splash-no-logo.png"
   },
   // Offers are disabled by default. The public homepage opens only the one offer
   // whose `enabled` value is true.
