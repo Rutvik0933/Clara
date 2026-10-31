@@ -697,6 +697,24 @@
     });
   }
 
+  async function loadPublishedOffer() {
+    try {
+      const response = await fetch('/api/offer', {
+        headers: { Accept: 'application/json' },
+        credentials: 'same-origin'
+      });
+      if (!response.ok) return;
+
+      const payload = await response.json();
+      if (!payload || !Object.prototype.hasOwnProperty.call(payload, 'offer')) return;
+      data.offers = payload.offer ? [payload.offer] : [];
+      if (window.__claraPageLoaded) prepareOfferPopup();
+    } catch (_) {
+      // Cloud offer sync is optional until the Worker KV binding is configured.
+      // Keep the current browser's local admin draft available as a fallback.
+    }
+  }
+
   const offerClose = document.getElementById('offer-popup-close');
   if (offerClose) offerClose.addEventListener('click', closeOfferPopup);
   document.querySelectorAll('[data-offer-close]').forEach(element => element.addEventListener('click', closeOfferPopup));
@@ -1814,6 +1832,7 @@
 
   // ── INIT ──────────────────────────────────────────────────────────
   populateAll();
+  loadPublishedOffer();
   initCampaignVideoPlayer();
 
   // Listen for data updates from admin panel

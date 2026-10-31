@@ -297,6 +297,13 @@ button { cursor: pointer; border: none; font-family: 'Inter', sans-serif; }
 .item-price { font-size: 1rem; font-weight: 700; color: var(--gold); flex-shrink: 0; }
 .item-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
 .offer-admin-note { background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.22); border-radius: var(--radius-sm); color: var(--text-secondary); padding: 0.9rem 1rem; margin: -0.75rem 0 1.25rem; font-size: 0.84rem; line-height: 1.5; }
+.offer-sync-panel { margin: 0 0 1.25rem; padding: 1rem; border: 1px solid rgba(74,222,128,0.26); border-radius: var(--radius-sm); background: rgba(74,222,128,0.05); }
+.offer-sync-panel strong { color: var(--white); font-size: 0.92rem; }
+.offer-sync-panel p { margin: 0.35rem 0 0; color: var(--text-secondary); font-size: 0.8rem; line-height: 1.45; }
+.offer-sync-controls { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 0.55rem; margin-top: 0.8rem; align-items: center; }
+.offer-sync-controls .form-input { min-width: 0; padding: 0.68rem 0.8rem; }
+.offer-sync-status.success { color: #86efac; }
+.offer-sync-status.error { color: #fca5a5; }
 .offer-row { border-left: 3px solid var(--text-muted); }
 .offer-row.offer-enabled { border-left-color: #4ade80; }
 .offer-status { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; padding: 0.28rem 0.52rem; border-radius: 50px; flex-shrink: 0; }
@@ -376,6 +383,7 @@ button { cursor: pointer; border: none; font-family: 'Inter', sans-serif; }
   .offer-row { align-items: flex-start; flex-wrap: wrap; }
   .offer-row .item-info { min-width: calc(100% - 64px); }
   .offer-row .item-actions { width: 100%; }
+  .offer-sync-controls { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
   .stats-row { grid-template-columns: 1fr; }

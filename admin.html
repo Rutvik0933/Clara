@@ -222,6 +222,18 @@
             <p>Create offers for the website welcome popup. Only one enabled offer is shown at a time.</p>
           </div>
           <div class="offer-admin-note">💡 Enable an offer to show it on the homepage. When every offer is disabled, visitors will not see an offer popup.</div>
+          <div class="offer-sync-panel">
+            <div>
+              <strong>Publish to every phone and computer</strong>
+              <p>Enter the Cloudflare offer-sync token once for this browser. It is kept only for this browser session, never in website code.</p>
+            </div>
+            <div class="offer-sync-controls">
+              <input type="password" id="offer-sync-token" class="form-input" placeholder="Cloudflare offer-sync token" autocomplete="off" />
+              <button class="btn-sm btn-edit" onclick="saveOfferSyncToken()">Save Token</button>
+              <button class="btn-sm btn-enable" onclick="publishOfferToAllDevices()">Publish Active Offer</button>
+            </div>
+            <p id="offer-sync-status" class="offer-sync-status">Cloud sync is not configured in this browser yet.</p>
+          </div>
           <button class="btn-primary mb-2" onclick="openAddOffer()">+ Add New Offer</button>
           <div id="offers-list" class="items-list"></div>
         </div>

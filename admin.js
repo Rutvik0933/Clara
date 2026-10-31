@@ -11,6 +11,7 @@ var _currentFilter   = 'all';
 var _uploadedImages  = {};
 
 var ADMIN_KEY        = 'claraAdmin';
+var OFFER_SYNC_TOKEN_KEY = 'claraOfferSyncToken';
 var DEFAULT_CREDS    = { username: 'admin', password: 'clara123' };
 
 // ── HELPERS ───────────────────────────────────────────────────────
@@ -240,9 +241,69 @@ function _isSafeOfferLink(value) {
   return /^(https?:\/\/|\/|#)/i.test(value);
 }
 
+function _getOfferSyncToken() {
+  try { return sessionStorage.getItem(OFFER_SYNC_TOKEN_KEY) || ''; } catch(e) { return ''; }
+}
+
+function _setOfferSyncStatus(message, type) {
+  var status = _el('offer-sync-status');
+  if (!status) return;
+  status.textContent = message;
+  status.className = 'offer-sync-status' + (type ? ' ' + type : '');
+}
+
+function _activeOfferForPublishing() {
+  var offers = _getData().offers || [];
+  return offers.find(function(offer) { return offer && offer.enabled; }) || null;
+}
+
+function saveOfferSyncToken() {
+  var token = _val('offer-sync-token');
+  if (!token) { _showToast('❌ Enter the Cloudflare offer-sync token first', 'error'); return; }
+  try { sessionStorage.setItem(OFFER_SYNC_TOKEN_KEY, token); } catch(e) {}
+  _setVal('offer-sync-token', '');
+  _setOfferSyncStatus('✅ Token saved for this browser session. Your next offer change will publish to all devices.', 'success');
+  _showToast('✅ Cloud sync token saved');
+}
+
+function publishOfferToAllDevices() {
+  var token = _getOfferSyncToken();
+  if (!token) {
+    _setOfferSyncStatus('⚠️ Add the Cloudflare offer-sync token before publishing.', 'error');
+    _showToast('⚠️ Offer is saved only on this browser until cloud sync is configured.', 'error');
+    return Promise.resolve(false);
+  }
+
+  _setOfferSyncStatus('Publishing active offer…');
+  return fetch('/api/offer', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': 'Bearer ' + token },
+    credentials: 'same-origin',
+    body: JSON.stringify({ offer: _activeOfferForPublishing() })
+  })
+    .then(function(response) {
+      if (!response.ok) throw new Error('status_' + response.status);
+      return response.json();
+    })
+    .then(function(payload) {
+      if (!payload || !Object.prototype.hasOwnProperty.call(payload, 'offer')) throw new Error('invalid_response');
+      _setOfferSyncStatus(payload.offer ? '✅ Active offer is live on every device.' : '✅ Offer popup is disabled on every device.', 'success');
+      _showToast(payload.offer ? '✅ Offer published to all devices!' : '✅ Offer disabled on all devices!');
+      return true;
+    })
+    .catch(function() {
+      _setOfferSyncStatus('❌ Could not publish. Check the Worker deployment, KV binding, and token.', 'error');
+      _showToast('❌ Cloud publish failed. Your change is currently local only.', 'error');
+      return false;
+    });
+}
+
 function _loadOffersTab() {
   var d = _getData();
   if (!Array.isArray(d.offers)) d.offers = [];
+  var tokenInput = _el('offer-sync-token');
+  if (tokenInput) tokenInput.value = '';
+  _setOfferSyncStatus(_getOfferSyncToken() ? '✅ Token is ready for this browser session.' : 'Cloud sync is not configured in this browser yet.', _getOfferSyncToken() ? 'success' : '');
   var list = _el('offers-list'); if (!list) return;
 
   if (!d.offers.length) {
@@ -313,6 +374,7 @@ function saveOffer() {
   };
   if (_editingIndex !== null) d.offers[_editingIndex] = offer; else d.offers.push(offer);
   _saveAndNotify(enabled ? 'Offer saved and enabled!' : 'Offer saved as disabled.');
+  publishOfferToAllDevices();
   _loadOffersTab();
   closeAdminModal();
 }
@@ -326,6 +388,7 @@ function toggleOffer(index) {
   else offer.enabled = false;
   offer.updatedAt = Date.now();
   _saveAndNotify(enabling ? 'Offer enabled! Previous offers disabled.' : 'Offer disabled.');
+  publishOfferToAllDevices();
   _loadOffersTab();
 }
 
@@ -335,6 +398,7 @@ function deleteOffer(index) {
   if (!confirm('Delete this offer?')) return;
   d.offers.splice(index, 1);
   _saveAndNotify('Offer deleted!');
+  publishOfferToAllDevices();
   _loadOffersTab();
 }
 
