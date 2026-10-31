@@ -307,6 +307,16 @@ button { cursor: none; border: none; background: none; }
 .about-badge-float span { font-size: 0.75rem; color: var(--blue-light); }
 .about-desc { color: var(--text-secondary); line-height: 1.8; margin-bottom: 2rem; font-size: 1rem; }
 .about-features { display: flex; flex-direction: column; gap: 1.25rem; }
+
+/* Brand terminology: visible, useful copy that clarifies the Pure CLARA / CLARA Water name. */
+.brand-identity { padding: 5.5rem 0; background: var(--dark-2); border-top: var(--border-glow); border-bottom: var(--border-glow); }
+.brand-identity-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 5rem; align-items: center; }
+.brand-identity-copy { max-width: 610px; }
+.brand-identity-copy p { color: var(--text-secondary); font-size: 1.05rem; line-height: 1.85; margin: 0 0 1rem; }
+.brand-identity-copy strong { color: var(--white); }
+.brand-identity-copy .text-link { display: inline-flex; gap: 0.45rem; margin-top: 0.7rem; color: var(--blue-light); font-weight: 600; }
+.brand-identity-copy .text-link span { transition: transform 0.2s ease; }
+.brand-identity-copy .text-link:hover span { transform: translateX(4px); }
 .feature-item { display: flex; gap: 1rem; align-items: flex-start; }
 .feat-icon { font-size: 1.5rem; flex-shrink: 0; }
 .feature-item strong { display: block; font-size: 0.9rem; color: var(--white); margin-bottom: 0.2rem; }
@@ -805,6 +815,7 @@ button { cursor: none; border: none; background: none; }
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .brand-identity-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
   .hero-bottle-wrap { flex: 0 0 300px; }

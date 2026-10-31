@@ -6,12 +6,12 @@ const CLARA_KEY = 'claraData';
 
 const defaultData = {
   hero: {
-    tagline: "Feel the purity in every drop with Pure CLARA packaged drinking water by AR Beverages, available for homes, offices, events and businesses in Gujarat.",
+    tagline: "Pure CLARA Water — also known as CLARA Water — is premium packaged drinking water by AR Beverages for homes, offices, events and businesses in Gujarat.",
     badge: "Premium Packaged Drinking Water",
     image: "images/clara_real_bottle.png"
   },
   about: {
-    description: "Pure CLARA is born from nature's finest water sources — pristine rivers untouched by industrial pollution. Every drop undergoes our 7-stage purification process, ensuring you receive water in its most natural and pure form.",
+    description: "Pure CLARA Water, also known as CLARA Water, is born from nature's finest water sources — pristine rivers untouched by industrial pollution. Every drop undergoes our 7-stage purification process, ensuring you receive water in its most natural and pure form.",
     image: "images/clara_river_source.png"
   },
   products: [
