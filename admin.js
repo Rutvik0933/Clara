@@ -157,6 +157,7 @@ function _initTabs() {
 // ── LOAD ALL TABS ─────────────────────────────────────────────────
 function _loadAllTabs() {
   _loadHeroTab();
+  _loadOffersTab();
   _loadAboutTab();
   _loadProductsTab();
   _loadBenefitsTab();
@@ -225,6 +226,116 @@ function saveHero() {
   d.hero.tagline = _val('hero-tagline');
   d.hero.badge   = _val('hero-badge');
   _saveAndNotify('Hero section saved!');
+}
+
+// ── OFFER POPUPS TAB ──────────────────────────────────────────────
+function _escapeHtml(value) {
+  return String(value || '').replace(/[&<>'"]/g, function(character) {
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[character];
+  });
+}
+
+function _isSafeOfferLink(value) {
+  if (!value) return true;
+  return /^(https?:\/\/|\/|#)/i.test(value);
+}
+
+function _loadOffersTab() {
+  var d = _getData();
+  if (!Array.isArray(d.offers)) d.offers = [];
+  var list = _el('offers-list'); if (!list) return;
+
+  if (!d.offers.length) {
+    list.innerHTML = '<div class="empty-state">🏷️ No offers created yet. Add an offer, then use Enable when you want it to appear on the website.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  d.offers.forEach(function(offer, index) {
+    var row = document.createElement('div');
+    row.className = 'item-row offer-row ' + (offer.enabled ? 'offer-enabled' : 'offer-disabled');
+    var image = offer.image
+      ? '<img class="item-thumb" src="' + _escapeHtml(offer.image) + '" alt="" onerror="this.style.display=\'none\'" />'
+      : '<div class="item-icon">🏷️</div>';
+    row.innerHTML = image +
+      '<div class="item-info"><strong>' + _escapeHtml(offer.title || 'Untitled offer') + '</strong><span>' + _escapeHtml(offer.description || 'No description') + '</span></div>' +
+      '<span class="offer-status ' + (offer.enabled ? 'is-enabled' : 'is-disabled') + '">' + (offer.enabled ? 'ENABLED' : 'DISABLED') + '</span>' +
+      '<div class="item-actions">' +
+        '<button class="btn-sm btn-edit" onclick="editOffer(' + index + ')">✏️ Edit</button>' +
+        '<button class="btn-sm ' + (offer.enabled ? 'btn-disable' : 'btn-enable') + '" onclick="toggleOffer(' + index + ')">' + (offer.enabled ? 'Disable' : 'Enable') + '</button>' +
+        '<button class="btn-sm btn-del" onclick="deleteOffer(' + index + ')">🗑️</button>' +
+      '</div>';
+    list.appendChild(row);
+  });
+}
+
+function openAddOffer() { _editingIndex = null; _openOfferModal(null); }
+function editOffer(index) { _editingIndex = index; _openOfferModal(_getData().offers[index]); }
+
+function _openOfferModal(offer) {
+  var content = _el('modal-form-content'); if (!content) return;
+  content.innerHTML =
+    '<h2 class="modal-title">' + (offer ? 'Edit' : 'Add') + ' Offer Popup</h2>' +
+    '<div class="form-group"><label>Offer Title</label><input type="text" id="mo-title" class="form-input" placeholder="e.g. Special launch offer" value="' + _escapeHtml(offer ? offer.title : '') + '" /></div>' +
+    '<div class="form-group"><label>Offer Description</label><textarea id="mo-description" class="form-input form-textarea" rows="4" placeholder="Tell visitors about the offer...">' + _escapeHtml(offer ? offer.description : '') + '</textarea></div>' +
+    '<div class="form-group"><label>Button Text</label><input type="text" id="mo-button-text" class="form-input" placeholder="Explore Products" value="' + _escapeHtml(offer ? offer.buttonText : 'Explore Products') + '" /></div>' +
+    '<div class="form-group"><label>Button Link (optional)</label><input type="text" id="mo-button-link" class="form-input" placeholder="#products or https://..." value="' + _escapeHtml(offer ? offer.buttonLink : '#products') + '" /></div>' +
+    '<div class="form-group"><label>Offer Image URL (optional)</label><input type="url" id="mo-image" class="form-input" placeholder="images/your-offer.jpg or https://..." value="' + _escapeHtml(offer ? offer.image : '') + '" /></div>' +
+    '<label class="offer-enabled-control"><input type="checkbox" id="mo-enabled"' + (offer && offer.enabled ? ' checked' : '') + ' /> <span>Enable this offer now</span></label>' +
+    '<p class="modal-help">Only one offer can be enabled at a time. Enabling this offer will disable the previous active offer.</p>' +
+    '<div class="modal-actions"><button class="btn-cancel" onclick="closeAdminModal()">Cancel</button><button class="btn-primary" onclick="saveOffer()">💾 Save Offer</button></div>';
+  _openModal();
+}
+
+function saveOffer() {
+  var d = _getData();
+  if (!Array.isArray(d.offers)) d.offers = [];
+  var title = _val('mo-title');
+  var buttonLink = _val('mo-button-link');
+  if (!title) { _showToast('❌ Offer title is required', 'error'); return; }
+  if (!_isSafeOfferLink(buttonLink)) { _showToast('❌ Use a link starting with https://, / or #', 'error'); return; }
+
+  var enabled = !!(_el('mo-enabled') && _el('mo-enabled').checked);
+  if (enabled) {
+    d.offers.forEach(function(existing, index) { if (index !== _editingIndex) existing.enabled = false; });
+  }
+
+  var prior = _editingIndex !== null ? d.offers[_editingIndex] : null;
+  var offer = {
+    id: prior ? prior.id : Date.now(),
+    title: title,
+    description: _val('mo-description'),
+    buttonText: _val('mo-button-text') || 'Explore Products',
+    buttonLink: buttonLink || '#products',
+    image: _val('mo-image'),
+    enabled: enabled,
+    updatedAt: Date.now()
+  };
+  if (_editingIndex !== null) d.offers[_editingIndex] = offer; else d.offers.push(offer);
+  _saveAndNotify(enabled ? 'Offer saved and enabled!' : 'Offer saved as disabled.');
+  _loadOffersTab();
+  closeAdminModal();
+}
+
+function toggleOffer(index) {
+  var d = _getData();
+  if (!Array.isArray(d.offers) || !d.offers[index]) return;
+  var offer = d.offers[index];
+  var enabling = !offer.enabled;
+  if (enabling) d.offers.forEach(function(item, itemIndex) { item.enabled = itemIndex === index; });
+  else offer.enabled = false;
+  offer.updatedAt = Date.now();
+  _saveAndNotify(enabling ? 'Offer enabled! Previous offers disabled.' : 'Offer disabled.');
+  _loadOffersTab();
+}
+
+function deleteOffer(index) {
+  var d = _getData();
+  if (!Array.isArray(d.offers) || !d.offers[index]) return;
+  if (!confirm('Delete this offer?')) return;
+  d.offers.splice(index, 1);
+  _saveAndNotify('Offer deleted!');
+  _loadOffersTab();
 }
 
 // ── ABOUT TAB ─────────────────────────────────────────────────────
@@ -516,17 +627,11 @@ function _loadMapTab() {
   var resultsDiv = _el('map-search-results');
   if (resultsDiv) resultsDiv.style.display = 'none';
 
-  // Auto-init search autocomplete if key is saved
-  if (m.apiKey && m.apiKey.trim() !== "" && m.apiKey.indexOf("YOUR_") === -1) {
-    setTimeout(function() {
-      initSearchAutocomplete();
-    }, 300);
-  } else {
-    // If no Google API key, initialize OpenStreetMap search fallback automatically
-    setTimeout(function() {
-      initOsmSearchFallback();
-    }, 300);
-  }
+  // Location search remains independent of the public Maps key. The legacy
+  // Places library cannot be enabled for new Google Cloud projects.
+  setTimeout(function() {
+    initOsmSearchFallback();
+  }, 300);
 }
 
 function initSearchAutocomplete() {

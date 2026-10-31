@@ -296,6 +296,19 @@ button { cursor: pointer; border: none; font-family: 'Inter', sans-serif; }
 .item-badge { font-size: 0.7rem; background: rgba(14,116,144,0.2); border: 1px solid rgba(14,116,144,0.3); color: var(--blue-light); padding: 0.2rem 0.5rem; border-radius: 4px; flex-shrink: 0; }
 .item-price { font-size: 1rem; font-weight: 700; color: var(--gold); flex-shrink: 0; }
 .item-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+.offer-admin-note { background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.22); border-radius: var(--radius-sm); color: var(--text-secondary); padding: 0.9rem 1rem; margin: -0.75rem 0 1.25rem; font-size: 0.84rem; line-height: 1.5; }
+.offer-row { border-left: 3px solid var(--text-muted); }
+.offer-row.offer-enabled { border-left-color: #4ade80; }
+.offer-status { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.07em; padding: 0.28rem 0.52rem; border-radius: 50px; flex-shrink: 0; }
+.offer-status.is-enabled { color: #86efac; background: rgba(74,222,128,0.12); border: 1px solid rgba(74,222,128,0.28); }
+.offer-status.is-disabled { color: var(--text-muted); background: rgba(148,163,184,0.08); border: 1px solid rgba(148,163,184,0.18); }
+.btn-enable { background: rgba(74,222,128,0.12); border: 1px solid rgba(74,222,128,0.3); color: #86efac; }
+.btn-enable:hover { background: rgba(74,222,128,0.23); }
+.btn-disable { background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.3); color: #fde68a; }
+.btn-disable:hover { background: rgba(251,191,36,0.22); }
+.offer-enabled-control { display: flex; align-items: center; gap: 0.6rem; color: var(--white); font-size: 0.88rem; padding: 0.85rem 1rem; border: var(--border); border-radius: var(--radius-sm); background: rgba(14,116,144,0.08); cursor: pointer; }
+.offer-enabled-control input { accent-color: var(--blue-light); width: 1rem; height: 1rem; }
+.modal-help { color: var(--text-muted); font-size: 0.75rem; line-height: 1.5; margin-top: 0.6rem; }
 
 /* MODAL */
 .modal-overlay {
@@ -360,6 +373,9 @@ button { cursor: pointer; border: none; font-family: 'Inter', sans-serif; }
   .form-row { grid-template-columns: 1fr; }
   .qa-grid { grid-template-columns: 1fr 1fr; }
   .item-thumb { width: 48px; height: 48px; }
+  .offer-row { align-items: flex-start; flex-wrap: wrap; }
+  .offer-row .item-info { min-width: calc(100% - 64px); }
+  .offer-row .item-actions { width: 100%; }
 }
 @media (max-width: 480px) {
   .stats-row { grid-template-columns: 1fr; }

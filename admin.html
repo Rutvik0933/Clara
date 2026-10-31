@@ -69,6 +69,9 @@
           <a href="#" class="sidebar-link" data-tab="hero">
             <span class="slink-icon">🏠</span> Hero Section
           </a>
+          <a href="#" class="sidebar-link" data-tab="offers">
+            <span class="slink-icon">🏷️</span> Offer Popups
+          </a>
           <a href="#" class="sidebar-link" data-tab="about">
             <span class="slink-icon">📖</span> About Section
           </a>
@@ -210,6 +213,17 @@
             </div>
             <button class="btn-primary" onclick="saveAbout()">💾 Save About Section</button>
           </div>
+        </div>
+
+        <!-- OFFER POPUPS TAB -->
+        <div class="tab-content" id="tab-offers">
+          <div class="tab-header">
+            <h1>Offer Popups</h1>
+            <p>Create offers for the website welcome popup. Only one enabled offer is shown at a time.</p>
+          </div>
+          <div class="offer-admin-note">💡 Enable an offer to show it on the homepage. When every offer is disabled, visitors will not see an offer popup.</div>
+          <button class="btn-primary mb-2" onclick="openAddOffer()">+ Add New Offer</button>
+          <div id="offers-list" class="items-list"></div>
         </div>
 
         <!-- PRODUCTS TAB -->
@@ -368,21 +382,21 @@
               <label>Google Maps API Key</label>
               <input type="text" id="map-api-key" class="form-input" placeholder="AIzaSy..." />
               <p class="form-help-text" style="color:var(--text-secondary);font-size:0.75rem;margin-top:0.5rem;line-height:1.4;">
-                If you don't have a Google Maps API Key, leave this field blank. The website will automatically use a beautiful, interactive open-source map (Leaflet/OpenStreetMap) as a fallback!
+                For the live public website, paste the browser-restricted key in <code>map-config.js</code> and deploy it to GitHub. Saving this field only changes the current browser.
               </p>
             </div>
           </div>
           <div class="form-card">
             <h3>📍 Factory Location Details</h3>
             <div class="form-group" style="margin-bottom:1.5rem; position:relative;">
-              <label>🔍 Search Location (Google Places Autocomplete)</label>
+              <label>🔍 Search Location</label>
               <div style="display:flex; gap:10px;">
                 <input type="text" id="map-search-input" class="form-input" placeholder="Search for your factory or location..." style="flex:1;" />
-                <button type="button" id="btn-init-search" class="btn-primary btn-sm" onclick="initSearchAutocomplete()" style="white-space:nowrap; cursor:pointer;">Initialize Search</button>
+                <button type="button" id="btn-init-search" class="btn-primary btn-sm" onclick="initOsmSearchFallback()" style="white-space:nowrap; cursor:pointer;">Enable Search</button>
               </div>
               <div id="map-search-results" style="display:none; position:absolute; left:0; right:0; top:100%; z-index:1001; background:var(--dark-3); border:var(--border); border-radius:var(--radius-sm); max-height:220px; overflow-y:auto; box-shadow:var(--shadow); margin-top:5px;"></div>
               <p class="form-help-text" style="color:var(--text-secondary);font-size:0.75rem;margin-top:0.5rem;line-height:1.4;">
-                Type a location and select it from the dropdown. Latitude, Longitude, and Address fields will update automatically. (If no Google API Key is set, OpenStreetMap search fallback will be used).
+                Type a location and select it from the dropdown. Latitude, Longitude, and Address fields will update automatically.
               </p>
             </div>
             <div class="form-row">
@@ -472,6 +486,7 @@
   <!-- TOAST NOTIFICATION -->
   <div class="toast" id="toast"></div>
 
+  <script src="map-config.js"></script>
   <script src="data.js"></script>
   <script src="admin.js"></script>
 </body>

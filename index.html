@@ -216,20 +216,15 @@
         </div>
       </div>
       <div class="hero-bottle-wrap">
-        <div class="bottle-glow"></div>
         <img
-          src="images/clara_real_bottle.png"
-          alt="Pure CLARA 750ml Water Bottle"
+          src="images/clara-200ml-splash-hd.jpg"
+          alt="Pure CLARA 200 ml packaged drinking water bottle with water splash"
           class="hero-bottle"
           id="hero-bottle"
-          role="button"
-          tabindex="0"
-          title="Click to see product details"
+          width="2160"
+          height="2880"
+          fetchpriority="high"
         />
-        <div class="bottle-hint">
-          <span class="pulse-dot"></span>
-          Tap to discover
-        </div>
       </div>
     </div>
     <div class="scroll-indicator">
@@ -669,12 +664,30 @@
     </div>
   </div>
 
+  <!-- ===== ADMIN-CONTROLLED OFFER POPUP ===== -->
+  <div class="offer-popup" id="offer-popup" aria-hidden="true">
+    <div class="offer-popup-backdrop" data-offer-close></div>
+    <section class="offer-popup-card" role="dialog" aria-modal="true" aria-labelledby="offer-popup-title">
+      <button class="offer-popup-close" id="offer-popup-close" type="button" aria-label="Close offer">✕</button>
+      <div class="offer-popup-image" id="offer-popup-image-wrap" hidden>
+        <img id="offer-popup-image" src="" alt="" />
+      </div>
+      <div class="offer-popup-body">
+        <p class="offer-popup-eyebrow">PURE CLARA OFFER</p>
+        <h2 id="offer-popup-title"></h2>
+        <p id="offer-popup-description"></p>
+        <a class="offer-popup-action" id="offer-popup-action" href="#products">Explore Products <span>→</span></a>
+      </div>
+    </section>
+  </div>
+
   <!-- ===== SCROLL TO TOP ===== -->
   <button class="scroll-top" id="scroll-top" aria-label="Scroll to top">↑</button>
 
   <!-- ===== WATER CURSOR ===== -->
   <div class="water-cursor" id="water-cursor"></div>
 
+  <script src="map-config.js"></script>
   <script src="data.js"></script>
   <script src="script.js"></script>
 </body>

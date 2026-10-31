@@ -10,6 +10,8 @@
   window.addEventListener('load', () => {
     setTimeout(() => {
       document.getElementById('loader').classList.add('hidden');
+      window.__claraPageLoaded = true;
+      prepareOfferPopup();
     }, 2200);
   });
 
@@ -326,6 +328,7 @@
     populateDealer();
     populateFooter();
     populateMap();
+    if (window.__claraPageLoaded) prepareOfferPopup();
     // Re-apply animations on dynamically generated content
     setTimeout(() => {
       splitIntoWords('.section-title');
@@ -642,6 +645,67 @@
     if (el) el.textContent = text;
   }
 
+  // ── ADMIN-CONTROLLED OFFER POPUP ──────────────────────────────────
+  let activeOffer = null;
+
+  function safeOfferLink(link) {
+    const value = typeof link === 'string' ? link.trim() : '';
+    return /^(https?:\/\/|\/|#)/i.test(value) ? value : '#products';
+  }
+
+  function offerSessionKey(offer) {
+    return `claraOfferDismissed:${offer.id || 'active'}:${offer.updatedAt || ''}`;
+  }
+
+  function closeOfferPopup() {
+    const popup = document.getElementById('offer-popup');
+    if (!popup) return;
+    popup.classList.remove('open');
+    popup.setAttribute('aria-hidden', 'true');
+    if (activeOffer) sessionStorage.setItem(offerSessionKey(activeOffer), '1');
+  }
+
+  function prepareOfferPopup() {
+    const popup = document.getElementById('offer-popup');
+    const offers = Array.isArray(data.offers) ? data.offers : [];
+    const offer = offers.find(item => item && item.enabled && String(item.title || '').trim());
+    if (!popup || !offer) {
+      if (popup) { popup.classList.remove('open'); popup.setAttribute('aria-hidden', 'true'); }
+      return;
+    }
+
+    activeOffer = offer;
+    const title = document.getElementById('offer-popup-title');
+    const description = document.getElementById('offer-popup-description');
+    const action = document.getElementById('offer-popup-action');
+    const imageWrap = document.getElementById('offer-popup-image-wrap');
+    const image = document.getElementById('offer-popup-image');
+    if (title) title.textContent = offer.title;
+    if (description) description.textContent = offer.description || '';
+    if (action) { action.textContent = offer.buttonText || 'Explore Products'; action.href = safeOfferLink(offer.buttonLink); }
+    if (imageWrap && image) {
+      const hasImage = typeof offer.image === 'string' && offer.image.trim();
+      imageWrap.hidden = !hasImage;
+      if (hasImage) { image.src = offer.image; image.alt = offer.title || 'Pure CLARA offer'; }
+    }
+    if (sessionStorage.getItem(offerSessionKey(offer))) return;
+    requestAnimationFrame(() => {
+      popup.classList.add('open');
+      popup.setAttribute('aria-hidden', 'false');
+      const close = document.getElementById('offer-popup-close');
+      if (close) close.focus();
+    });
+  }
+
+  const offerClose = document.getElementById('offer-popup-close');
+  if (offerClose) offerClose.addEventListener('click', closeOfferPopup);
+  document.querySelectorAll('[data-offer-close]').forEach(element => element.addEventListener('click', closeOfferPopup));
+  const offerAction = document.getElementById('offer-popup-action');
+  if (offerAction) offerAction.addEventListener('click', closeOfferPopup);
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && document.getElementById('offer-popup')?.classList.contains('open')) closeOfferPopup();
+  });
+
   // ── GALLERY SLIDER ────────────────────────────────────────────────
   let currentSlide = 0;
 
@@ -714,13 +778,6 @@
   modalClose.addEventListener('click', window.closeModal);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) window.closeModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.closeModal(); });
-
-  // Hero bottle click
-  const heroBotlle = document.getElementById('hero-bottle');
-  if (heroBotlle) {
-    heroBotlle.addEventListener('click', () => openProductModal(1));
-    heroBotlle.addEventListener('keydown', (e) => { if (e.key === 'Enter') openProductModal(1); });
-  }
 
   // ── CONTACT FORM ──────────────────────────────────────────────────
   const contactForm = document.getElementById('contact-form');
@@ -1658,10 +1715,28 @@
         renderGoogleMap(m);
       });
     } else {
-      loadLeaflet(() => {
-        renderLeafletMap(m);
-      });
+      // A normal Google Maps embed does not need a Maps JavaScript API key.
+      // It keeps the location usable until a billing-enabled browser key is
+      // deliberately configured for the richer, custom JavaScript map.
+      renderGoogleMapsEmbed(m);
     }
+  }
+
+  function renderGoogleMapsEmbed(m) {
+    const latitude = Number.parseFloat(m.latitude);
+    const longitude = Number.parseFloat(m.longitude);
+    const mapContainer = document.getElementById('map-container');
+    if (!mapContainer || !Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
+
+    const zoom = Math.min(20, Math.max(1, Number.parseInt(m.zoom, 10) || 15));
+    const iframe = document.createElement('iframe');
+    iframe.title = `${m.factoryName || 'Pure CLARA Factory'} location map`;
+    iframe.loading = 'lazy';
+    iframe.allowFullscreen = true;
+    iframe.referrerPolicy = 'no-referrer-when-downgrade';
+    iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(`${latitude},${longitude}`)}&z=${zoom}&output=embed`;
+
+    mapContainer.replaceChildren(iframe);
   }
 
   function renderGoogleMap(m) {

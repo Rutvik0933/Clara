@@ -8,8 +8,11 @@ const defaultData = {
   hero: {
     tagline: "Pure CLARA Water — also known as CLARA Water — is premium packaged drinking water by AR Beverages for homes, offices, events and businesses in Gujarat.",
     badge: "Premium Packaged Drinking Water",
-    image: "images/clara_real_bottle.png"
+    image: "images/clara-200ml-splash-hd.jpg"
   },
+  // Offers are disabled by default. The public homepage opens only the one offer
+  // whose `enabled` value is true.
+  offers: [],
   about: {
     description: "Pure CLARA Water, also known as CLARA Water, is born from nature's finest water sources — pristine rivers untouched by industrial pollution. Every drop undergoes our 7-stage purification process, ensuring you receive water in its most natural and pure form.",
     image: "images/clara_river_source.png"
@@ -156,10 +159,10 @@ const defaultData = {
     copyright: "© 2026 PureLuxurious Water – Pure CLARA by AR Beverages. All Rights Reserved. | Premium Non-Carbonated Packaged Drinking Water | Gujarat, India"
   },
   map: {
-    apiKey: "",
+    apiKey: (window.CLARA_PUBLIC_MAPS_API_KEY || "").trim(),
     latitude: 23.073171,
     longitude: 72.731736,
-    zoom: 8,
+    zoom: 15,
     factoryName: "Huka Gam, Huka, Gujarat 382330",
     address: "Huka Gam, Huka, Gujarat 382330",
     phone: "+91 96625 50051",
@@ -184,10 +187,24 @@ function getClaraData() {
         localStorage.setItem(CLARA_KEY, JSON.stringify(parsed));
       }
       // Deep merge to ensure new fields are present
-      return deepMerge(defaultData, parsed);
+      return applyPublicMapsKey(deepMerge(defaultData, parsed));
     }
   } catch (e) {}
-  return JSON.parse(JSON.stringify(defaultData));
+  return applyPublicMapsKey(JSON.parse(JSON.stringify(defaultData)));
+}
+
+// A browser-restricted Maps key belongs in map-config.js so the deployed
+// website uses it for every visitor. It deliberately takes precedence over
+// this browser's local admin draft value.
+function applyPublicMapsKey(data) {
+  const key = typeof window.CLARA_PUBLIC_MAPS_API_KEY === 'string'
+    ? window.CLARA_PUBLIC_MAPS_API_KEY.trim()
+    : '';
+  if (key) {
+    data.map = data.map || {};
+    data.map.apiKey = key;
+  }
+  return data;
 }
 
 function saveClaraData(data) {
