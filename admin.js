@@ -257,6 +257,11 @@ function _activeOfferForPublishing() {
   return offers.find(function(offer) { return offer && offer.enabled; }) || null;
 }
 
+function _offerApiUrl() {
+  var configured = typeof window.CLARA_OFFER_API_URL === 'string' ? window.CLARA_OFFER_API_URL.trim() : '';
+  return /^https:\/\//i.test(configured) ? configured : '/api/offer';
+}
+
 function saveOfferSyncToken() {
   var token = _val('offer-sync-token');
   if (!token) { _showToast('❌ Enter the Cloudflare offer-sync token first', 'error'); return; }
@@ -275,7 +280,7 @@ function publishOfferToAllDevices() {
   }
 
   _setOfferSyncStatus('Publishing active offer…');
-  return fetch('/api/offer', {
+  return fetch(_offerApiUrl(), {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': 'Bearer ' + token },
     credentials: 'same-origin',

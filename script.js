@@ -648,6 +648,13 @@
   // ── ADMIN-CONTROLLED OFFER POPUP ──────────────────────────────────
   let activeOffer = null;
 
+  function getOfferApiUrl() {
+    const configured = typeof window.CLARA_OFFER_API_URL === 'string'
+      ? window.CLARA_OFFER_API_URL.trim()
+      : '';
+    return /^https:\/\//i.test(configured) ? configured : '/api/offer';
+  }
+
   function safeOfferLink(link) {
     const value = typeof link === 'string' ? link.trim() : '';
     return /^(https?:\/\/|\/|#)/i.test(value) ? value : '#products';
@@ -699,7 +706,7 @@
 
   async function loadPublishedOffer() {
     try {
-      const response = await fetch('/api/offer', {
+      const response = await fetch(getOfferApiUrl(), {
         headers: { Accept: 'application/json' },
         credentials: 'same-origin'
       });
